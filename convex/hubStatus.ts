@@ -52,7 +52,7 @@ export const update = mutation({
     const { passcode, ...statusData } = args;
     const existing = await ctx.db.query("hubStatus").first();
     if (existing) {
-      await ctx.db.patch(existing._id, statusData);
+      await ctx.db.replace(existing._id, statusData);
     } else {
       await ctx.db.insert("hubStatus", statusData);
     }
