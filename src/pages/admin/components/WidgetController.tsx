@@ -1,6 +1,6 @@
 import React from "react";
 import type { HubStatus, SocialLink, ShortLink } from "../../../lib/db";
-import { Music, Check, ToggleLeft, ToggleRight, User, Link2, Plus, Copy, Edit2, Trash2 } from "lucide-react";
+import { Music, Check, ToggleLeft, ToggleRight, User, Link2, Plus, Copy, Edit2, Trash2, Quote } from "lucide-react";
 
 interface WidgetControllerProps {
   widgetForm: HubStatus;
@@ -175,6 +175,26 @@ export const WidgetController: React.FC<WidgetControllerProps> = ({
                 onChange={(e) => onChange({ ...widgetForm, statusText: e.target.value })}
                 placeholder="Editing the Ladakh highway vlog 🎬"
                 className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/40 text-white"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Quote Widget Config */}
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <Quote className="w-4 h-4 text-[#BF5AF2]" />
+            Quote Widget Settings
+          </h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs text-[#86868B] mb-1 font-semibold">Quote Text</label>
+              <textarea 
+                value={widgetForm.quoteText || ""} 
+                onChange={(e) => onChange({ ...widgetForm, quoteText: e.target.value })}
+                placeholder="e.g. Stay hungry, stay foolish."
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-white/40 text-white h-16 resize-none"
               />
             </div>
           </div>

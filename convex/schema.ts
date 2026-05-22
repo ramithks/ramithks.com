@@ -57,5 +57,6 @@ export default defineSchema({
     profileName: v.optional(v.string()),
     profileSubtitle: v.optional(v.string()),
     profileBio: v.optional(v.string()),
+    quoteText: v.optional(v.string()),
   }),
 });

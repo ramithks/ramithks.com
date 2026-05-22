@@ -8,10 +8,10 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as hubStatus from "../hubStatus.js";
 import type * as links from "../links.js";
 import type * as posts from "../posts.js";
-import type * as seed from "../seed.js";
 import type * as shortLinks from "../shortLinks.js";
 
 import type {
@@ -21,10 +21,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   hubStatus: typeof hubStatus;
   links: typeof links;
   posts: typeof posts;
-  seed: typeof seed;
   shortLinks: typeof shortLinks;
 }>;
 

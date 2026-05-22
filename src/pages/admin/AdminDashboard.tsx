@@ -19,7 +19,31 @@ export const AdminDashboard = () => {
     return sessionStorage.getItem("ramithks_admin_auth") === "true";
   });
   const [passcode, setPasscode] = useState<string>("");
+  const [passcodeAttempt, setPasscodeAttempt] = useState<string>(() => {
+    return sessionStorage.getItem("ramithks_admin_passcode") || "";
+  });
   const [authError, setAuthError] = useState<string>("");
+
+  const isPasscodeValid = useQuery(
+    api.auth.verifyPasscode,
+    passcodeAttempt ? { passcode: passcodeAttempt } : "skip"
+  );
+
+  useEffect(() => {
+    if (passcodeAttempt) {
+      if (isPasscodeValid === true) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem("ramithks_admin_auth", "true");
+        sessionStorage.setItem("ramithks_admin_passcode", passcodeAttempt);
+        setAuthError("");
+      } else if (isPasscodeValid === false) {
+        setAuthError("Access Denied. Incorrect admin key.");
+        setIsAuthenticated(false);
+        sessionStorage.removeItem("ramithks_admin_auth");
+        sessionStorage.removeItem("ramithks_admin_passcode");
+      }
+    }
+  }, [isPasscodeValid, passcodeAttempt]);
 
   // Tabs: 'posts' | 'widgets' | 'shortlinks'
   const [activeTab, setActiveTab] = useState<string>("posts");
@@ -74,19 +98,16 @@ export const AdminDashboard = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Default mock admin key is 'admin'
-    if (passcode.toLowerCase() === "admin") {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("ramithks_admin_auth", "true");
-      setAuthError("");
-    } else {
-      setAuthError("Access Denied. Incorrect admin key.");
-    }
+    setAuthError("");
+    setPasscodeAttempt(passcode);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setPasscode("");
+    setPasscodeAttempt("");
     sessionStorage.removeItem("ramithks_admin_auth");
+    sessionStorage.removeItem("ramithks_admin_passcode");
   };
 
   // Convex queries
@@ -104,7 +125,6 @@ export const AdminDashboard = () => {
   const deleteShortLinkMutation = useMutation(api.shortLinks.deleteLink);
   const updateStatus = useMutation(api.hubStatus.update);
   const saveSocialLinks = useMutation(api.links.saveAll);
-  const resetDBMutation = useMutation(api.seed.resetDB);
 
   // Data states
   const [links, setLinks] = useState<any[]>([]);
@@ -157,6 +177,8 @@ export const AdminDashboard = () => {
     const postType = postForm.type || "blog";
     const postTitle = postForm.title || (postType === "twitter" ? (postForm.description || "").slice(0, 60) : "Untitled Post");
 
+    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+
     const payload = {
       title: postTitle,
       tag: postForm.tag || "Travel",
@@ -176,12 +198,12 @@ export const AdminDashboard = () => {
 
     if (postForm._id) {
       // Edit
-      updatePost({ id: postForm._id, ...payload })
+      updatePost({ id: postForm._id, passcode: passcodeToken, ...payload })
         .then(() => setPostForm(null))
         .catch(err => alert(err.message || "Failed to update post"));
     } else {
       // Add
-      createPost(payload)
+      createPost({ passcode: passcodeToken, ...payload })
         .then(() => setPostForm(null))
         .catch(err => alert(err.message || "Failed to create post"));
     }
@@ -189,7 +211,8 @@ export const AdminDashboard = () => {
 
   const deletePost = (id: any) => {
     if (confirm("Are you sure you want to delete this post?")) {
-      deletePostMutation({ id }).catch(console.error);
+      const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+      deletePostMutation({ id, passcode: passcodeToken }).catch(console.error);
     }
   };
 
@@ -207,6 +230,8 @@ export const AdminDashboard = () => {
       return;
     }
 
+    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+
     const payload = {
       slug: shortLinkForm.slug.trim().toLowerCase(),
       url: shortLinkForm.url,
@@ -215,12 +240,12 @@ export const AdminDashboard = () => {
 
     if (shortLinkForm._id) {
       // Edit
-      updateShortLink({ id: shortLinkForm._id, ...payload })
+      updateShortLink({ id: shortLinkForm._id, passcode: passcodeToken, ...payload })
         .then(() => setShortLinkForm(null))
         .catch(err => alert(err.message || "Failed to update short link"));
     } else {
       // Add
-      createShortLink(payload)
+      createShortLink({ passcode: passcodeToken, ...payload })
         .then(() => setShortLinkForm(null))
         .catch(err => alert(err.message || "Failed to create short link"));
     }
@@ -228,7 +253,8 @@ export const AdminDashboard = () => {
 
   const deleteShortLink = (id: any) => {
     if (confirm("Are you sure you want to delete this short link?")) {
-      deleteShortLinkMutation({ id }).catch(console.error);
+      const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+      deleteShortLinkMutation({ id, passcode: passcodeToken }).catch(console.error);
     }
   };
 
@@ -237,9 +263,12 @@ export const AdminDashboard = () => {
     e.preventDefault();
     if (!widgetForm) return;
 
+    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+
     try {
       // 1. Update status
       await updateStatus({
+        passcode: passcodeToken,
         statusEmoji: widgetForm.statusEmoji,
         statusText: widgetForm.statusText,
         spotifyActive: !!widgetForm.spotifyActive,
@@ -249,6 +278,7 @@ export const AdminDashboard = () => {
         profileName: widgetForm.profileName,
         profileSubtitle: widgetForm.profileSubtitle,
         profileBio: widgetForm.profileBio,
+        quoteText: widgetForm.quoteText,
       });
 
       // 2. Save all social links (the mutation also handles syncing short links on the backend!)
@@ -261,25 +291,12 @@ export const AdminDashboard = () => {
         clicks: link.clicks || 0,
         shortLinkSlug: link.shortLinkSlug || undefined,
       }));
-      await saveSocialLinks({ links: formattedLinks });
+      await saveSocialLinks({ passcode: passcodeToken, links: formattedLinks });
 
       setWidgetSavedSuccess(true);
       setTimeout(() => setWidgetSavedSuccess(false), 3000);
     } catch (err: any) {
       alert(err.message || "Failed to save profile state");
-    }
-  };
-
-  const handleResetDB = () => {
-    if (confirm("Warning: This will reset all database items to their defaults (losing any custom entries/clicks). Proceed?")) {
-      resetDBMutation()
-        .then(() => {
-          // Reset local widgetForm state to null so it re-initializes from Convex query
-          setWidgetForm(null);
-        })
-        .catch(err => {
-          alert(err.message || "Failed to reset database");
-        });
     }
   };
 
@@ -308,7 +325,7 @@ export const AdminDashboard = () => {
                 type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Passcode (Default: admin)"
+                placeholder="Enter admin passcode"
                 className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/40 transition-colors placeholder:text-white/20 text-white"
                 required
               />
@@ -360,13 +377,6 @@ export const AdminDashboard = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleResetDB}
-            className="px-3 py-1.5 rounded-lg border border-white/10 hover:border-red-500/30 text-white/60 hover:text-red-400 hover:bg-red-500/5 text-xs font-medium transition-all"
-            title="Reset DB to initial seed defaults"
-          >
-            Reset Seed Data
-          </button>
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-medium transition-colors"
@@ -640,7 +650,15 @@ export const AdminDashboard = () => {
                         clicks: totalPlatformClicks,
                         items: itemCount,
                       };
-                    });
+                    }).filter(p => p.items > 0 || p.clicks > 0);
+
+                    if (platformData.length === 0) {
+                      return (
+                        <div className="text-center py-8 text-xs text-[#86868B] border border-white/5 rounded-xl bg-black/20">
+                          No active platforms or metrics found. Add social links or feed posts to see analytics.
+                        </div>
+                      );
+                    }
 
                     const maxPlatformClicks = Math.max(...platformData.map(d => d.clicks), 1);
 

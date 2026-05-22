@@ -15,6 +15,7 @@ export const get = query({
 // Create a new post
 export const create = mutation({
   args: {
+    passcode: v.string(),
     title: v.string(),
     tag: v.string(),
     thumbnail: v.string(),
@@ -37,8 +38,13 @@ export const create = mutation({
     author: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+    const { passcode, ...postData } = args;
     return await ctx.db.insert("posts", {
-      ...args,
+      ...postData,
       clicks: 0,
     });
   },
@@ -47,6 +53,7 @@ export const create = mutation({
 // Update an existing post
 export const update = mutation({
   args: {
+    passcode: v.string(),
     id: v.id("posts"),
     title: v.string(),
     tag: v.string(),
@@ -70,15 +77,26 @@ export const update = mutation({
     author: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, ...data } = args;
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+    const { id, passcode, ...data } = args;
     await ctx.db.patch(id, data);
   },
 });
 
 // Delete a post
 export const deletePost = mutation({
-  args: { id: v.id("posts") },
+  args: {
+    passcode: v.string(),
+    id: v.id("posts"),
+  },
   handler: async (ctx, args) => {
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
     await ctx.db.delete(args.id);
   },
 });
