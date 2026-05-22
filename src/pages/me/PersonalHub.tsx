@@ -15,7 +15,8 @@ import {
   CheckCircle2, 
   ExternalLink,
   ThumbsUp,
-  Layers
+  Layers,
+  Quote
 } from "lucide-react";
 import { trackLinkClick } from "../../lib/analytics";
 
@@ -67,7 +68,7 @@ export const PersonalHub = () => {
   const profilePhoto = status?.profilePhoto || "/dp.png";
   const profileName = status?.profileName || "Ramith K S";
   const profileSubtitle = status?.profileSubtitle || "Vlogger & Creator";
-  const profileBio = status?.profileBio || "Traveling the world, riding mountain passes, and documenting stories on YouTube.";
+  const profileBio = status?.profileBio || "Building products, writing code, and riding motorbikes. Sharing daily life, startup insights, and travel vlogs.";
   
   // Real-time IST Clock
   const [istTime, setIstTime] = useState<string>("");
@@ -278,7 +279,7 @@ export const PersonalHub = () => {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.12, duration: 0.4 }}
-        className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-lg relative overflow-hidden group w-full music-card-group hover:border-[#FA2356]/30 hover:shadow-[0_0_20px_rgba(250,35,86,0.04)] hover:scale-[1.015] transition-all duration-300 ease-out"
+        className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-lg relative overflow-hidden group w-full music-card-group hover:border-[#FA2356]/30 hover:shadow-[0_0_20px_rgba(250,35,86,0.04)] hover:-translate-y-0.5 hover:scale-[1.01] transition-all duration-300 ease-out"
       >
         <div className="flex items-center justify-between mb-3.5">
           <div className="flex items-center gap-1.5 text-[#FA2356]">
@@ -313,6 +314,28 @@ export const PersonalHub = () => {
               {status.spotifyArtist}
             </p>
           </div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const renderQuoteWidget = () => {
+    if (!status || !status.quoteText || status.quoteText.trim() === "") return null;
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-5 shadow-lg relative overflow-hidden group w-full hover:border-[#BF5AF2]/30 hover:shadow-[0_0_20px_rgba(191,90,242,0.04)] hover:-translate-y-0.5 transition-all duration-300 ease-out"
+      >
+        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+          <Quote className="w-24 h-24 text-white" />
+        </div>
+        <div className="relative z-10">
+          <Quote className="w-5 h-5 text-[#BF5AF2] mb-3" />
+          <p className="text-sm md:text-base font-medium text-white/90 italic leading-relaxed">
+            "{status.quoteText}"
+          </p>
         </div>
       </motion.div>
     );
@@ -404,19 +427,18 @@ export const PersonalHub = () => {
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-[#FFFFFF]/3 blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[400px] rounded-full bg-[#FFFFFF]/2 blur-[120px] pointer-events-none" />
 
-      {/* 2-Column Bento Grid Layout: Identity on left (lg:col-span-4), Content & feed on right (lg:col-span-8) */}
+      {/* 3-Column Bento Grid Layout: Profile & Status on left (lg:col-span-4), Feed in middle (lg:col-span-5), Widgets on right (lg:col-span-3) */}
       <div className="max-w-6xl mx-auto px-6 mt-4 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start lg:items-stretch relative w-full lg:flex-1 lg:min-h-0">
         
-        {/* LEFT COLUMN: Profile, Status, Music & Local Clock */}
-        <div className="lg:col-span-4 space-y-5 lg:h-full lg:flex lg:flex-col lg:min-h-0 lg:overflow-y-auto feed-scrollbar">
+        {/* LEFT COLUMN: Profile, Status, Music */}
+        <div className="lg:col-span-4 space-y-5 lg:h-full lg:flex lg:flex-col lg:min-h-0 lg:overflow-y-auto feed-scrollbar px-1.5 py-1">
           {renderProfileCard()}
           {renderStatusWidget()}
           {renderMusicWidget()}
-          {renderClockWidget()}
         </div>
 
-        {/* RIGHT COLUMN: Social Feed */}
-        <div className="lg:col-span-8 space-y-5 w-full lg:h-full lg:flex lg:flex-col lg:min-h-0">
+        {/* MIDDLE COLUMN: Social Feed */}
+        <div className="lg:col-span-5 space-y-5 w-full lg:h-full lg:flex lg:flex-col lg:min-h-0">
           
           {/* Social Stream Header */}
           <motion.div 
@@ -781,6 +803,12 @@ export const PersonalHub = () => {
               <p>© {new Date().getFullYear()} Ramith K S. All rights reserved.</p>
             </footer>
           </div>
+        </div>
+
+        {/* RIGHT COLUMN: Quote & Local Clock */}
+        <div className="lg:col-span-3 space-y-5 lg:h-full lg:flex lg:flex-col lg:min-h-0 lg:overflow-y-auto feed-scrollbar px-1.5 py-1">
+          {renderQuoteWidget()}
+          {renderClockWidget()}
         </div>
 
       </div>

@@ -24,12 +24,17 @@ export const getBySlug = query({
 // Create a short link
 export const create = mutation({
   args: {
+    passcode: v.string(),
     slug: v.string(),
     url: v.string(),
     openInApp: v.boolean(),
     syncId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
     const slugLower = args.slug.toLowerCase().trim();
     const existing = await ctx.db
       .query("shortLinks")
@@ -52,6 +57,7 @@ export const create = mutation({
 // Update a short link
 export const update = mutation({
   args: {
+    passcode: v.string(),
     id: v.id("shortLinks"),
     slug: v.string(),
     url: v.string(),
@@ -59,7 +65,11 @@ export const update = mutation({
     syncId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, ...data } = args;
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+    const { id, passcode, ...data } = args;
     const slugLower = args.slug.toLowerCase().trim();
     
     const existing = await ctx.db
@@ -79,8 +89,15 @@ export const update = mutation({
 
 // Delete a short link
 export const deleteLink = mutation({
-  args: { id: v.id("shortLinks") },
+  args: {
+    passcode: v.string(),
+    id: v.id("shortLinks"),
+  },
   handler: async (ctx, args) => {
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
     await ctx.db.delete(args.id);
   },
 });

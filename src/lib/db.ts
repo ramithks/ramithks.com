@@ -46,6 +46,7 @@ export interface HubStatus {
   profileName?: string;
   profileSubtitle?: string;
   profileBio?: string;
+  quoteText?: string;
 }
 
 
@@ -218,6 +219,7 @@ const DEFAULT_STATUS: HubStatus = {
   profileName: 'Ramith K S',
   profileSubtitle: 'Vlogger & Creator',
   profileBio: 'Just figuring things out while building something of my own.\n\nI post a mix of startup stuff, tech, daily life, and moto vlogs — basically whatever I’m up to. Some days it’s work, some days it’s rides, some days it’s just random moments.\n\nNothing too polished, just real.',
+  quoteText: 'Stay hungry, stay foolish.',
 };
 
 

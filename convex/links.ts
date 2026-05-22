@@ -5,13 +5,55 @@ import { v } from "convex/values";
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("socialLinks").collect();
+    const links = await ctx.db.query("socialLinks").collect();
+    if (links.length === 0) {
+      return [
+        {
+          _id: "youtube" as any,
+          label: "YouTube",
+          url: "https://www.youtube.com/@ramith_ks",
+          icon: "youtube" as const,
+          openInApp: true,
+          clicks: 0,
+          shortLinkSlug: "yt",
+        },
+        {
+          _id: "instagram" as any,
+          label: "Instagram",
+          url: "https://www.instagram.com/ramithks",
+          icon: "instagram" as const,
+          openInApp: true,
+          clicks: 0,
+          shortLinkSlug: "insta",
+        },
+        {
+          _id: "linkedin" as any,
+          label: "LinkedIn",
+          url: "https://www.linkedin.com/in/ramith-k-s/",
+          icon: "linkedin" as const,
+          openInApp: true,
+          clicks: 0,
+          shortLinkSlug: "linkedin",
+        },
+        {
+          _id: "x" as any,
+          label: "X (Twitter)",
+          url: "https://x.com/ramithks",
+          icon: "x" as const,
+          openInApp: true,
+          clicks: 0,
+          shortLinkSlug: "x",
+        },
+      ];
+    }
+    return links;
   },
 });
 
 // Save all social links (syncs frontend list with db and shortLinks)
 export const saveAll = mutation({
   args: {
+    passcode: v.string(),
     links: v.array(
       v.object({
         id: v.optional(v.string()),
@@ -32,6 +74,10 @@ export const saveAll = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const adminPassword = (globalThis as any).process?.env?.ADMIN_PASSWORD || "admin";
+    if (args.passcode !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
     const existingLinks = await ctx.db.query("socialLinks").collect();
     const existingIds = new Set(existingLinks.map((l) => l._id));
     const keptIds = new Set<string>();
