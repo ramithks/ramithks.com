@@ -40,6 +40,7 @@ export const Navbar = () => {
     { name: "Experience", href: "#experience", id: "experience" },
     { name: "Work", href: "#work", id: "work" },
     { name: "Contact", href: "#contact", id: "contact" },
+    { name: "Social Hub 🌊", href: "/", id: "social" },
   ];
 
   return (
@@ -61,15 +62,15 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
             
             {/* 1. Identity Zone */}
-            <div className="hidden lg:flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center border border-white/10 group overflow-hidden">
-                    <span className="text-[10px] font-black font-mono text-primary group-hover:scale-110 transition-transform">RKS</span>
+            <a href="/" className="hidden lg:flex items-center gap-3 group/logo cursor-pointer">
+                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center border border-white/10 overflow-hidden group-hover/logo:border-white/30 transition-colors">
+                    <span className="text-[10px] font-black font-mono text-primary group-hover/logo:scale-110 transition-transform">RKS</span>
                 </div>
                 <div className="flex flex-col">
                     <span className="font-bold text-sm tracking-tight text-white leading-none mb-1">RAMITH K S</span>
                     <span className="text-[9px] text-white/40 tracking-[0.2em] uppercase leading-none">Senior Engineer</span>
                 </div>
-            </div>
+            </a>
 
             {/* 2. Navigation Zone (Center) - Responsive */}
             <nav className="flex items-center gap-0.5 sm:gap-1 p-1 bg-white/5 rounded-full border border-white/5 mx-auto lg:mx-0 overflow-x-auto no-scrollbar max-w-[90vw] sm:max-w-none">

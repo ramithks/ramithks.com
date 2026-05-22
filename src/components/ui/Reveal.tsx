@@ -10,7 +10,7 @@ export const Reveal = ({ children, delay = 0.25, width = "fit-content" }: { chil
         if (isInView) {
             mainControls.start("visible");
         }
-    }, [isInView]);
+    }, [isInView, mainControls]);
 
     return (
         <motion.div
