@@ -6,7 +6,7 @@
 
 ## Live Portfolio
 
-- [https://ramithks.github.io/portfolio/](https://ramithks.github.io/portfolio/)
+- [https://ramithks.com](https://ramithks.com)
 
 ## 🚀 Overview
 
@@ -44,10 +44,10 @@ This portfolio is not just a showcase of work; it's a demonstration of engineeri
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/ramithks/portfolio.git
+git clone https://github.com/ramithks/ramithks.com.git
 
 # 2. Enter directory
-cd portfolio
+cd ramithks.com
 
 # 3. Install dependencies
 npm install

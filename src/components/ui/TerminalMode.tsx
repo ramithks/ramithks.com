@@ -7,7 +7,12 @@ interface TerminalModeProps {
 }
 
 // Mock File System
-const fileSystem = {
+interface DirNode {
+  type: string;
+  children: string[];
+}
+
+const fileSystem: Record<string, DirNode> = {
   '~': {
     type: 'dir',
     children: ['about', 'experience', 'projects', 'contact', 'skills', 'readme.txt']
@@ -115,14 +120,12 @@ export const TerminalMode = ({ onExit }: TerminalModeProps) => {
         ];
         break;
 
-      case 'ls':
-        // @ts-ignore
+      case 'ls': {
         const currentDir = fileSystem[cwd];
         if (currentDir) {
            // Format output like ls -F
            response = currentDir.children.map((item: string) => {
               const fullPath = `${cwd}/${item}`.replace('~//', '~/');
-              // @ts-ignore
               const isDir = fileSystem[fullPath];
               return isDir ? `${item}/` : item;
            }).join('  ');
@@ -130,13 +133,13 @@ export const TerminalMode = ({ onExit }: TerminalModeProps) => {
             response = `ls: cannot open directory '.': Permission denied`;
         }
         break;
+      }
 
-      case 'cd':
+      case 'cd': {
         if (!target || target === '~') {
             setCwd('~');
         } else {
             const newPath = resolvePath(target);
-            // @ts-ignore
             if (fileSystem[newPath]) {
                 setCwd(newPath);
             } else {
@@ -144,19 +147,18 @@ export const TerminalMode = ({ onExit }: TerminalModeProps) => {
             }
         }
         break;
+      }
 
-      case 'cat':
+      case 'cat': {
         if (!target) {
             response = "cat: missing argument";
         } else {
             const fullPath = resolvePath(target);
-            // @ts-ignore
             const content = fileContents[fullPath];
             if (content) {
                 response = content;
             } else {
                 // Check if it's a directory
-                // @ts-ignore
                 if (fileSystem[fullPath]) {
                     response = `cat: ${target}: Is a directory`;
                 } else {
@@ -165,6 +167,7 @@ export const TerminalMode = ({ onExit }: TerminalModeProps) => {
             }
         }
         break;
+      }
 
       case 'clear':
         setOutput([]);
@@ -205,7 +208,6 @@ export const TerminalMode = ({ onExit }: TerminalModeProps) => {
         const args = input.trim().split(' ');
         const partial = args[args.length - 1];
         
-        // @ts-ignore
         const currentFiles = fileSystem[cwd]?.children || [];
         const match = currentFiles.find((f: string) => f.startsWith(partial));
         

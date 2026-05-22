@@ -1,44 +1,22 @@
-import { Hero } from "./sections/Hero";
-import { About } from "./sections/About";
-import { Skills } from "./sections/Skills";
-import { Experience } from "./sections/Experience";
-import { Projects } from "./sections/Projects";
-import { Contact } from "./sections/Contact";
-
-import { SmoothScroll } from "./components/ui/SmoothScroll";
-import { CustomCursor } from "./components/ui/CustomCursor";
-
-import { Navbar } from "./components/layout/Navbar";
-import { Helmet } from "react-helmet-async";
-
-import { CommandPalette } from "./components/ui/CommandPalette";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { PersonalHub } from "./pages/me/PersonalHub";
+import { PortfolioPage } from "./pages/portfolio/PortfolioPage";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { AppOpener } from "./pages/me/AppOpener";
+import { ShortLinkRedirect } from "./pages/me/ShortLinkRedirect";
 
 function App() {
   return (
-    <div className="bg-black min-h-screen text-white cursor-none selection:bg-primary/30">
-      <Helmet>
-          <title>Ramith K S | Senior Backend Engineer</title>
-          <meta name="description" content="Portfolio of Ramith K S, a Senior Backend Engineer specializing in scalable distributed systems." />
-          <meta property="og:title" content="Ramith K S | Senior Backend Engineer" />
-          <meta property="og:description" content="Building scalable systems and high-performance APIs." />
-          <meta property="og:image" content="/profile_alt.jpg" />
-        </Helmet>
-        
-        <Navbar />
-        <CommandPalette />
-        <CustomCursor />
-        
-        <SmoothScroll>
-          <main className="bg-background min-h-screen text-text-primary selection:bg-primary/30">
-            <Hero />
-            <About />
-            <Skills />
-            <Experience />
-            <Projects />
-            <Contact />
-          </main>
-        </SmoothScroll>
-    </div>
+    <Routes>
+      <Route path="/" element={<PersonalHub />} />
+      <Route path="/me" element={<PersonalHub />} />
+      <Route path="/portfolio" element={<PortfolioPage />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/open" element={<AppOpener />} />
+      <Route path="/l/:slug" element={<ShortLinkRedirect />} />
+      {/* Catch-all fallback redirects back to the main hub */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

@@ -25,13 +25,14 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  cursor: none;
 }
 
-a,
-button {
-  cursor: none;
+.cursor-none,
+.cursor-none a,
+.cursor-none button {
+  cursor: none !important;
 }
+
 
 ::-webkit-scrollbar {
   width: 8px;
