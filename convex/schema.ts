@@ -24,6 +24,7 @@ export default defineSchema({
     reposts: v.optional(v.number()),
     duration: v.optional(v.string()),
     author: v.optional(v.string()),
+    shortLinkSlug: v.optional(v.string()),
   }),
   socialLinks: defineTable({
     label: v.string(),
