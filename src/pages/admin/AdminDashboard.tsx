@@ -7,12 +7,42 @@ import type { Post } from "../../lib/db";
 import {
   Lock, ArrowLeft, Plus, Edit2, Trash2,
   ExternalLink, BarChart3, Layers, Sparkles,
-  TrendingUp, Smartphone
+  TrendingUp, Smartphone, Copy, CheckCircle2
 } from "lucide-react";
 
 import { PostFormModal } from "./components/PostFormModal";
 import { ShortLinkFormModal } from "./components/ShortLinkFormModal";
 import { WidgetController } from "./components/WidgetController";
+
+const AdminCopyButton = ({ slug }: { slug: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const fullLink = `${window.location.origin}/l/${slug}`;
+    navigator.clipboard.writeText(fullLink).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={`p-2 rounded-lg transition-all duration-300 border ${
+        copied
+          ? "bg-[#30D158]/10 border-[#30D158]/30 text-[#30D158] scale-[1.03]"
+          : "bg-purple-500/10 border-purple-500/20 hover:border-purple-500/40 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
+      }`}
+      title={copied ? "Copied!" : "Copy Short Link"}
+    >
+      {copied ? (
+        <CheckCircle2 className="w-3.5 h-3.5" />
+      ) : (
+        <Copy className="w-3.5 h-3.5" />
+      )}
+    </button>
+  );
+};
 
 export const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -194,6 +224,7 @@ export const AdminDashboard = () => {
       reposts: postForm.reposts ? Number(postForm.reposts) : undefined,
       duration: postForm.duration || undefined,
       author: postForm.author || undefined,
+      shortLinkSlug: postForm.shortLinkSlug || undefined,
     };
 
     if (postForm._id) {
@@ -458,6 +489,11 @@ export const AdminDashboard = () => {
                           {post.openInApp && (
                             <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/10">App Opener</span>
                           )}
+                          {post.shortLinkSlug && (
+                            <span className="text-[9px] font-mono font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/10">
+                              /l/{post.shortLinkSlug}
+                            </span>
+                          )}
                         </div>
                         <h3 className="font-bold text-sm mt-1">{post.title || post.description?.slice(0, 50) + "..."}</h3>
                         <p className="text-xs text-[#86868B] line-clamp-2 mt-1">{post.description}</p>
@@ -472,6 +508,9 @@ export const AdminDashboard = () => {
                     {/* Stats & Actions */}
                     <div className="flex md:flex-col items-end justify-end border-t md:border-t-0 border-white/5 pt-3 md:pt-0 shrink-0">
                       <div className="flex gap-2">
+                        {post.shortLinkSlug && (
+                          <AdminCopyButton slug={post.shortLinkSlug} />
+                        )}
                         <button
                           onClick={() => setPostForm(post)}
                           className="p-2 rounded-lg bg-white/5 border border-white/5 hover:border-white/15 text-white/70 hover:text-white transition-colors"

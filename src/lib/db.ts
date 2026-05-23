@@ -26,6 +26,7 @@ export interface Post {
   reposts?: number;
   duration?: string;
   author?: string;
+  shortLinkSlug?: string;
 }
 
 export interface ShortLink {

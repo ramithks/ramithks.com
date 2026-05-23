@@ -1546,6 +1546,30 @@ export const PostFormModal: React.FC<PostFormModalProps> = ({
                 />
               </div>
 
+              {/* Short Link Slug */}
+              <div>
+                <label className="block text-xs text-[#86868B] mb-1 font-semibold">
+                  Short Link Slug (Optional)
+                </label>
+                <div className="flex items-center">
+                  <span className="text-xs text-[#86868B] font-mono bg-[#0c0c0e]/80 border border-white/10 border-r-0 rounded-l-xl px-3 py-2.5 shrink-0 select-none">
+                    /l/
+                  </span>
+                  <input
+                    type="text"
+                    value={postForm.shortLinkSlug || ""}
+                    onChange={(e) =>
+                      onChange({ ...postForm, shortLinkSlug: e.target.value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, "") })
+                    }
+                    placeholder="e.g. gokarna"
+                    className="w-full bg-[#0c0c0e]/60 border border-white/10 rounded-r-xl px-4 py-2.5 text-xs focus:outline-none focus:border-white/40 text-white font-mono"
+                  />
+                </div>
+                <p className="text-[9px] text-[#86868B] mt-1">
+                  Enables a redirection shortcut like <code>ramithks.com/l/gokarna</code> that leads directly to this post's link.
+                </p>
+              </div>
+
               {/* Thumbnail URL */}
               {postForm.type !== "twitter" && (
                 <div>

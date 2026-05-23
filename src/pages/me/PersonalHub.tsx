@@ -16,7 +16,8 @@ import {
   ExternalLink,
   ThumbsUp,
   Layers,
-  Quote
+  Quote,
+  Copy
 } from "lucide-react";
 import { trackLinkClick } from "../../lib/analytics";
 
@@ -56,6 +57,49 @@ const YoutubeIcon = () => (
     <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
   </svg>
 );
+
+const CopyButton = ({ slug, fallbackUrl }: { slug?: string; fallbackUrl: string }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const textToCopy = slug 
+      ? `${window.location.origin}/l/${slug}` 
+      : fallbackUrl;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(err => {
+      console.error("Failed to copy text: ", err);
+    });
+  };
+
+  return (
+    <button 
+      onClick={handleCopy}
+      className={`transition-all duration-300 font-semibold text-[11px] flex items-center gap-1.5 px-3 py-1 rounded-full cursor-pointer border ${
+        copied 
+          ? "bg-[#30D158]/10 border-[#30D158]/30 text-[#30D158] scale-[1.03]" 
+          : "bg-white/5 border-white/10 text-[#8E8E93] hover:text-white hover:bg-white/10"
+      }`}
+      title="Copy link"
+    >
+      {copied ? (
+        <>
+          <CheckCircle2 className="w-3 h-3 text-[#30D158]" />
+          <span>Copied!</span>
+        </>
+      ) : (
+        <>
+          <Copy className="w-3 h-3" />
+          <span>Copy Link</span>
+        </>
+      )}
+    </button>
+  );
+};
 
 export const PersonalHub = () => {
   const links = useQuery(api.links.get);
@@ -416,11 +460,15 @@ export const PersonalHub = () => {
       `}} />
 
       <Helmet>
-        <title>Ramith K S | Digital Hub</title>
-        <meta name="description" content="Personal space, link hub, and latest updates by Ramith K S, Vlogger & Creator." />
-        <meta property="og:title" content="Ramith K S | Digital Hub" />
-        <meta property="og:description" content="Personal space, link hub, and latest updates." />
-        <meta property="og:image" content="/dp.png" />
+        <title>Ramith K S | Personal Hub</title>
+        <meta name="description" content="Personal space, link hub, and latest updates by Ramith K S. Sharing daily life, startup insights, and travel vlogs." />
+        <meta property="og:title" content="Ramith K S | Personal Hub" />
+        <meta property="og:description" content="Personal space, link hub, and latest updates by Ramith K S. Sharing daily life, startup insights, and travel vlogs." />
+        <meta property="og:image" content="https://yt3.googleusercontent.com/ZQl01VLClAjE7QYrWEzoJMIaFT7lCqKYNdR9SGnWQrU8xs9QWW2vC82DmvN9esoSztAopzqe6w=s160-c-k-c0x00ffffff-no-rj" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content="Ramith K S | Personal Hub" />
+        <meta property="twitter:description" content="Personal space, link hub, and latest updates by Ramith K S. Sharing daily life, startup insights, and travel vlogs." />
+        <meta property="twitter:image" content="https://yt3.googleusercontent.com/ZQl01VLClAjE7QYrWEzoJMIaFT7lCqKYNdR9SGnWQrU8xs9QWW2vC82DmvN9esoSztAopzqe6w=s160-c-k-c0x00ffffff-no-rj" />
       </Helmet>
 
       {/* Subtle Apple Monochrome Gradients */}
@@ -462,7 +510,7 @@ export const PersonalHub = () => {
             {/* Vertical Chronological Timeline Feed */}
             <div className="relative pl-10 md:pl-12 space-y-6">
               {/* Timeline Axis Line */}
-              <div className="absolute left-[15px] md:left-[20px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-[#2C2C2E] via-[#2C2C2E] to-transparent pointer-events-none" />
+              <div className="absolute left-5 md:left-6 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[#2C2C2E] via-[#2C2C2E] to-transparent pointer-events-none" />
 
               {posts.slice(0, visiblePostsCount).map((post, index) => {
                 const urlToGo = post.openInApp ? `/open?url=${encodeURIComponent(post.url)}` : post.url;
@@ -485,7 +533,7 @@ export const PersonalHub = () => {
                   <div key={post._id} className="relative group">
                     {/* Timeline Dot Indicator */}
                     <div 
-                      className="absolute left-[-29px] md:left-[-33px] top-[22px] w-2.5 h-2.5 rounded-full border border-black z-10 transition-all duration-300 group-hover:scale-150"
+                      className="absolute left-[-25px] md:left-[-29px] top-[22px] w-2.5 h-2.5 rounded-full border border-black z-10 transition-all duration-300 group-hover:scale-150"
                       style={{
                         backgroundColor: dotColor,
                         boxShadow: `0 0 10px ${dotColor}`,
@@ -503,25 +551,25 @@ export const PersonalHub = () => {
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
-                              className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-xl relative overflow-hidden group/card hover:border-[#FF453A]/30 hover:shadow-[0_0_20px_rgba(255,69,58,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
+                              className="bg-[#18181A]/90 backdrop-blur-md border border-[#2C2C2E]/60 rounded-2xl p-5 shadow-lg shadow-black/25 relative overflow-hidden group/card hover:border-[#FF453A]/30 hover:shadow-[0_0_20px_rgba(255,69,58,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
                             >
-                              <div className="flex flex-col sm:flex-row gap-4">
+                              <div className="flex flex-col gap-4">
                                 {post.thumbnail && (
                                   <a 
                                     href={urlToGo} 
                                     target="_blank" 
                                     rel="noreferrer" 
                                     onClick={() => handlePostClick(post)} 
-                                    className="block relative w-full sm:w-56 aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E] bg-black group-hover/card:border-[#FF453A]/20 transition-colors"
+                                    className="block relative w-full aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E]/50 bg-black"
                                   >
-                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.02] transition-transform duration-300" />
+                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.03] transition-transform duration-500" />
                                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover/card:bg-black/20 transition-colors">
-                                      <div className="w-10 h-10 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg group-hover/card:scale-105 transition-transform duration-200">
+                                      <div className="w-12 h-12 rounded-full bg-[#FF453A] flex items-center justify-center text-white shadow-lg group-hover/card:scale-108 transition-transform duration-300">
                                         <Play className="w-4 h-4 fill-white ml-0.5" />
                                       </div>
                                     </div>
                                     {post.duration && (
-                                      <span className="absolute bottom-2 right-2 text-[9px] font-mono font-bold bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white">
+                                      <span className="absolute bottom-2.5 right-2.5 text-[9px] font-mono font-bold bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white">
                                         {post.duration}
                                       </span>
                                     )}
@@ -530,28 +578,37 @@ export const PersonalHub = () => {
 
                                 <div className="flex-1 flex flex-col justify-between min-w-0">
                                   <div>
-                                    <div className="flex items-center justify-between mb-2 text-xs">
-                                      <span className="text-[9px] font-bold text-[#FF453A] bg-[#FF453A]/10 px-2 py-0.5 rounded border border-[#FF453A]/15 flex items-center gap-1">
+                                    <div className="flex items-center justify-between mb-2.5 text-xs flex-wrap gap-2">
+                                      <span className="text-[9px] font-bold text-[#FF453A] bg-[#FF453A]/10 px-2.5 py-0.5 rounded-full border border-[#FF453A]/15 flex items-center gap-1 whitespace-nowrap uppercase tracking-wider">
                                         <YoutubeIcon />
                                         YouTube Video
                                       </span>
                                       <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
                                     </div>
 
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block group/title">
-                                      <h3 className="text-sm font-bold text-white group-hover/title:text-[#FF453A] transition-colors leading-snug line-clamp-2">
+                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block">
+                                      <h3 className="text-sm font-bold text-white group-hover/card:text-[#FF453A] transition-colors leading-snug">
                                         {post.title}
                                       </h3>
                                     </a>
-                                    <p className="text-xs text-[#AEAEB2] mt-1.5 leading-relaxed line-clamp-2">{post.description}</p>
+                                    <p className="text-xs text-[#AEAEB2] mt-2 leading-relaxed">{post.description}</p>
                                   </div>
 
-                                  <div className="flex items-center justify-between mt-3.5 pt-2.5 border-t border-[#2C2C2E] text-xs">
+                                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[#2C2C2E]/60 text-xs flex-wrap gap-3">
                                     <span className="text-[#8E8E93] font-mono text-[10px]">{post.views ? `${post.views.toLocaleString()} views` : 'Live'}</span>
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="text-[#FF453A] font-semibold text-[11px] flex items-center gap-1 hover:underline">
-                                      <span>Watch Video</span>
-                                      <ExternalLink className="w-3 h-3" />
-                                    </a>
+                                    <div className="flex items-center gap-2">
+                                      <CopyButton slug={post.shortLinkSlug} fallbackUrl={post.url} />
+                                      <a 
+                                        href={urlToGo} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        onClick={() => handlePostClick(post)} 
+                                        className="text-[#FF453A] bg-[#FF453A]/10 border border-[#FF453A]/15 hover:bg-[#FF453A]/20 transition-all duration-300 font-semibold text-[11px] flex items-center gap-1 px-3 py-1 rounded-full whitespace-nowrap"
+                                      >
+                                        <span>Watch Video</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -565,52 +622,61 @@ export const PersonalHub = () => {
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
-                              className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-xl relative overflow-hidden group/card hover:border-[#FF2D55]/30 hover:shadow-[0_0_20px_rgba(255,45,85,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
+                              className="bg-[#18181A]/90 backdrop-blur-md border border-[#2C2C2E]/60 rounded-2xl p-5 shadow-lg shadow-black/25 relative overflow-hidden group/card hover:border-[#FF2D55]/30 hover:shadow-[0_0_20px_rgba(255,45,85,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
                             >
-                              <div className="flex flex-col sm:flex-row gap-4">
+                              <div className="flex flex-col gap-4">
                                 {post.thumbnail && (
                                   <a 
                                     href={urlToGo} 
                                     target="_blank" 
                                     rel="noreferrer" 
                                     onClick={() => handlePostClick(post)} 
-                                    className="block relative w-full sm:w-44 aspect-square shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E] bg-black group-hover/card:border-[#FF2D55]/20 transition-colors"
+                                    className="block relative w-full aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E]/50 bg-black"
                                   >
-                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.03] transition-transform duration-500" />
                                     <div className="absolute inset-0 bg-black/10 group-hover/card:bg-transparent transition-colors" />
-                                    <div className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-white opacity-0 group-hover/card:opacity-100 transition-opacity">
-                                      <Heart className="w-3.5 h-3.5 fill-[#FF2D55] stroke-[#FF2D55]" />
+                                    <div className="absolute top-3 right-3 p-2 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-white opacity-0 group-hover/card:opacity-100 transition-opacity">
+                                      <Heart className="w-4 h-4 fill-[#FF2D55] stroke-[#FF2D55]" />
                                     </div>
                                   </a>
                                 )}
 
                                 <div className="flex-1 flex flex-col justify-between min-w-0">
                                   <div>
-                                    <div className="flex items-center justify-between mb-2 text-xs">
-                                      <span className="text-[9px] font-bold text-[#FF2D55] bg-[#FF2D55]/10 px-2 py-0.5 rounded border border-[#FF2D55]/15 flex items-center gap-1">
+                                    <div className="flex items-center justify-between mb-2.5 text-xs flex-wrap gap-2">
+                                      <span className="text-[9px] font-bold text-[#FF2D55] bg-[#FF2D55]/10 px-2.5 py-0.5 rounded-full border border-[#FF2D55]/15 flex items-center gap-1 whitespace-nowrap uppercase tracking-wider">
                                         <InstagramIcon />
                                         Instagram
                                       </span>
                                       <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
                                     </div>
 
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block group/title">
-                                      <h3 className="text-sm font-bold text-white group-hover/title:text-[#FF2D55] transition-colors leading-snug line-clamp-2">
+                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block">
+                                      <h3 className="text-sm font-bold text-white group-hover/card:text-[#FF2D55] transition-colors leading-snug">
                                         {post.title}
                                       </h3>
                                     </a>
-                                    <p className="text-xs text-[#AEAEB2] mt-1.5 leading-relaxed line-clamp-2">{post.description}</p>
+                                    <p className="text-xs text-[#AEAEB2] mt-2 leading-relaxed">{post.description}</p>
                                   </div>
 
-                                  <div className="flex items-center justify-between mt-3.5 pt-2.5 border-t border-[#2C2C2E] text-xs">
+                                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[#2C2C2E]/60 text-xs flex-wrap gap-3">
                                     <div className="flex items-center gap-3 text-[#8E8E93] text-[10px]">
                                       <span className="flex items-center gap-1"><Heart className="w-3 h-3 fill-[#FF2D55]/20 stroke-[#8E8E93]" /> {post.likes || 0}</span>
                                       <span className="flex items-center gap-1"><MessageSquare className="w-3 h-3" /> {post.comments || 0}</span>
                                     </div>
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="text-[#FF2D55] font-semibold text-[11px] flex items-center gap-1 hover:underline">
-                                      <span>View Photo</span>
-                                      <ExternalLink className="w-3 h-3" />
-                                    </a>
+                                    <div className="flex items-center gap-2">
+                                      <CopyButton slug={post.shortLinkSlug} fallbackUrl={post.url} />
+                                      <a 
+                                        href={urlToGo} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        onClick={() => handlePostClick(post)} 
+                                        className="text-[#FF2D55] bg-[#FF2D55]/10 border border-[#FF2D55]/15 hover:bg-[#FF2D55]/20 transition-all duration-300 font-semibold text-[11px] flex items-center gap-1 px-3 py-1 rounded-full whitespace-nowrap"
+                                      >
+                                        <span>View Photo</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -624,42 +690,57 @@ export const PersonalHub = () => {
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
-                              className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-xl relative overflow-hidden group/card hover:border-white/15 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
+                              className="bg-[#18181A]/90 backdrop-blur-md border border-[#2C2C2E]/60 rounded-2xl p-5 shadow-lg shadow-black/25 relative overflow-hidden group/card hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
                             >
-                              <div className="flex flex-col justify-between h-full">
-                                <div>
-                                  <div className="flex items-center justify-between mb-3">
-                                    {/* Profile header */}
-                                    <div className="flex items-center gap-2">
-                                      <img src={profilePhoto} alt={profileName} className="w-8 h-8 rounded-full object-cover border border-[#2C2C2E]" />
-                                      <div>
-                                        <div className="flex items-center gap-1">
-                                          <span className="text-xs font-bold text-white leading-none">{profileName}</span>
-                                          <CheckCircle2 className="w-3 h-3 fill-[#0A84FF] stroke-black" />
-                                        </div>
-                                        <span className="text-[9px] text-[#8E8E93] font-mono leading-none">@{post.author || 'ramithks'}</span>
+                              <div className="flex flex-col gap-3.5">
+                                <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+                                  {/* Profile header */}
+                                  <div className="flex items-center gap-2.5">
+                                    <img src={profilePhoto} alt={profileName} className="w-9 h-9 rounded-full object-cover border border-[#2C2C2E]/80" />
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-xs font-bold text-white leading-none">{profileName}</span>
+                                        <CheckCircle2 className="w-3 h-3 fill-[#0A84FF] stroke-black" />
                                       </div>
+                                      <span className="text-[9px] text-[#8E8E93] font-mono leading-none mt-1.5 block">@{post.author || 'ramithks'}</span>
                                     </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-bold text-white bg-white/10 px-2 py-0.5 rounded-full border border-white/15 flex items-center gap-1 whitespace-nowrap uppercase tracking-wider">
+                                      <XIcon />
+                                      X Update
+                                    </span>
                                     <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
                                   </div>
+                                </div>
 
+                                <div className="flex-1 flex flex-col justify-between min-w-0">
                                   <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block">
-                                    <p className="text-xs font-semibold text-white leading-relaxed whitespace-pre-line group-hover/card:text-[#0A84FF] transition-colors line-clamp-4">
+                                    <p className="text-xs font-semibold text-white/95 leading-relaxed whitespace-pre-line group-hover/card:text-[#38bdf8] transition-colors">
                                       {post.description}
                                     </p>
                                   </a>
-                                </div>
 
-                                <div className="flex items-center justify-between mt-3.5 pt-2.5 border-t border-[#2C2C2E] text-xs text-[#8E8E93]">
-                                  <div className="flex items-center gap-3.5 text-[10px]">
-                                    <span className="flex items-center gap-1 hover:text-[#0A84FF] transition-colors"><MessageSquare className="w-3 h-3" /> {post.comments || 0}</span>
-                                    <span className="flex items-center gap-1 hover:text-[#30D158] transition-colors"><Repeat className="w-3 h-3" /> {post.reposts || 0}</span>
-                                    <span className="flex items-center gap-1 hover:text-[#FF2D55] transition-colors"><Heart className="w-3 h-3" /> {post.likes || 0}</span>
+                                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[#2C2C2E]/60 text-xs flex-wrap gap-3">
+                                    <div className="flex items-center gap-3.5 text-[#8E8E93] text-[10px]">
+                                      <span className="flex items-center gap-1 hover:text-[#38bdf8] transition-colors"><MessageSquare className="w-3 h-3" /> {post.comments || 0}</span>
+                                      <span className="flex items-center gap-1 hover:text-[#30D158] transition-colors"><Repeat className="w-3 h-3" /> {post.reposts || 0}</span>
+                                      <span className="flex items-center gap-1 hover:text-[#FF2D55] transition-colors"><Heart className="w-3 h-3" /> {post.likes || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <CopyButton slug={post.shortLinkSlug} fallbackUrl={post.url} />
+                                      <a 
+                                        href={urlToGo} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        onClick={() => handlePostClick(post)} 
+                                        className="text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 font-semibold text-[11px] flex items-center gap-1 px-3 py-1 rounded-full whitespace-nowrap"
+                                      >
+                                        <span>View on X</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    </div>
                                   </div>
-                                  <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="text-[#FFFFFF] font-semibold text-[11px] flex items-center gap-1 hover:underline">
-                                    <span>View on X</span>
-                                    <ExternalLink className="w-3 h-3" />
-                                  </a>
                                 </div>
                               </div>
                             </motion.div>
@@ -672,53 +753,68 @@ export const PersonalHub = () => {
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
-                              className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-xl relative overflow-hidden group/card hover:border-[#0A84FF]/30 hover:shadow-[0_0_20px_rgba(10,132,255,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
+                              className="bg-[#18181A]/90 backdrop-blur-md border border-[#2C2C2E]/60 rounded-2xl p-5 shadow-lg shadow-black/25 relative overflow-hidden group/card hover:border-[#0A84FF]/30 hover:shadow-[0_0_20px_rgba(10,132,255,0.04)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
                             >
-                              <div className="flex flex-col sm:flex-row gap-4">
+                              <div className="flex flex-col gap-4">
+                                <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                                  <div className="flex items-center gap-2.5">
+                                    <img src={profilePhoto} alt={profileName} className="w-9 h-9 rounded-full object-cover border border-[#2C2C2E]/85" />
+                                    <div>
+                                      <div className="flex items-center gap-1">
+                                        <span className="text-xs font-bold text-white leading-none">{post.author || profileName}</span>
+                                        <span className="text-[9px] text-[#8E8E93] leading-none">• 1st</span>
+                                      </div>
+                                      <span className="text-[8px] text-[#8E8E93] tracking-wide block uppercase font-semibold leading-none mt-1">Creator & Traveler</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-bold text-[#0A84FF] bg-[#0A84FF]/10 px-2.5 py-0.5 rounded-full border border-[#0A84FF]/15 flex items-center gap-1 whitespace-nowrap uppercase tracking-wider">
+                                      <LinkedInIcon />
+                                      LinkedIn
+                                    </span>
+                                    <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
+                                  </div>
+                                </div>
+
                                 {post.thumbnail && (
                                   <a 
                                     href={urlToGo} 
                                     target="_blank" 
                                     rel="noreferrer" 
                                     onClick={() => handlePostClick(post)} 
-                                    className="block relative w-full sm:w-44 aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E] bg-black group-hover/card:border-[#0A84FF]/20 transition-colors"
+                                    className="block relative w-full aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E]/50 bg-black"
                                   >
-                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.03] transition-transform duration-500" />
                                   </a>
                                 )}
 
                                 <div className="flex-1 flex flex-col justify-between min-w-0">
                                   <div>
-                                    <div className="flex items-center justify-between mb-2.5">
-                                      <div className="flex items-center gap-2">
-                                        <img src={profilePhoto} alt={profileName} className="w-8 h-8 rounded-full object-cover border border-[#2C2C2E]" />
-                                        <div>
-                                          <div className="flex items-center gap-1">
-                                            <span className="text-xs font-bold text-white">{post.author || profileName}</span>
-                                            <span className="text-[9px] text-[#8E8E93]">• 1st</span>
-                                          </div>
-                                          <span className="text-[8px] text-[#8E8E93] tracking-wide block uppercase font-medium leading-none mt-0.5">Content Creator & Traveler</span>
-                                        </div>
-                                      </div>
-                                      <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
-                                    </div>
-
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block group/title">
-                                      <h3 className="text-sm font-bold text-white group-hover/title:text-[#0A84FF] transition-colors leading-snug line-clamp-2">
+                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block">
+                                      <h3 className="text-sm font-bold text-white group-hover/card:text-[#0A84FF] transition-colors leading-snug">
                                         {post.title}
                                       </h3>
                                     </a>
-                                    <p className="text-xs text-[#AEAEB2] mt-1.5 leading-relaxed line-clamp-2">{post.description}</p>
+                                    <p className="text-xs text-[#AEAEB2] mt-2 leading-relaxed">{post.description}</p>
                                   </div>
 
-                                  <div className="flex items-center justify-between mt-3.5 pt-2.5 border-t border-[#2C2C2E] text-xs">
+                                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[#2C2C2E]/60 text-xs flex-wrap gap-3">
                                     <span className="text-[#8E8E93] flex items-center gap-1 text-[10px]">
                                       <ThumbsUp className="w-3 h-3 text-[#0A84FF] fill-[#0A84FF]/20" /> {post.likes || 0} reactions
                                     </span>
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="text-[#0A84FF] font-semibold text-[11px] flex items-center gap-1 hover:underline">
-                                      <span>Read Post</span>
-                                      <ExternalLink className="w-3 h-3" />
-                                    </a>
+                                    <div className="flex items-center gap-2">
+                                      <CopyButton slug={post.shortLinkSlug} fallbackUrl={post.url} />
+                                      <a 
+                                        href={urlToGo} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        onClick={() => handlePostClick(post)} 
+                                        className="text-[#0A84FF] bg-[#0A84FF]/10 border border-[#0A84FF]/15 hover:bg-[#0A84FF]/20 transition-all duration-300 font-semibold text-[11px] flex items-center gap-1 px-3 py-1 rounded-full whitespace-nowrap"
+                                      >
+                                        <span>Read Post</span>
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -733,47 +829,56 @@ export const PersonalHub = () => {
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.1 + (index * 0.05), duration: 0.3 }}
-                              className="bg-[#1C1C1E] border border-[#2C2C2E] rounded-2xl p-4 shadow-xl relative overflow-hidden group/card hover:border-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
+                              className="bg-[#18181A]/90 backdrop-blur-md border border-[#2C2C2E]/60 rounded-2xl p-5 shadow-lg shadow-black/25 relative overflow-hidden group/card hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-300 ease-out w-full"
                             >
-                              <div className="flex flex-col sm:flex-row gap-4">
+                              <div className="flex flex-col gap-4">
                                 {post.thumbnail && (
                                   <a 
                                     href={urlToGo} 
                                     target="_blank" 
                                     rel="noreferrer" 
                                     onClick={() => handlePostClick(post)} 
-                                    className="block relative w-full sm:w-44 aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E] bg-black group-hover/card:border-white/20 transition-colors"
+                                    className="block relative w-full aspect-video shrink-0 rounded-xl overflow-hidden border border-[#2C2C2E]/50 bg-black"
                                   >
-                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.02] transition-transform duration-300" />
+                                    <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover group-hover/card:scale-[1.03] transition-transform duration-500" />
                                   </a>
                                 )}
 
                                 <div className="flex-1 flex flex-col justify-between min-w-0">
                                   <div>
-                                    <div className="flex items-center justify-between mb-2 text-xs">
-                                      <span className="text-[9px] font-bold text-[#8E8E93] bg-[#2C2C2E] px-2.5 py-0.5 rounded border border-[#3A3A3C] flex items-center gap-1">
+                                    <div className="flex items-center justify-between mb-2.5 text-xs flex-wrap gap-2">
+                                      <span className="text-[9px] font-bold text-[#AEAEB2] bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10 flex items-center gap-1 whitespace-nowrap uppercase tracking-wider">
                                         <Layers className="w-3 h-3" />
                                         {post.tag}
                                       </span>
                                       <span className="text-[9px] text-[#8E8E93] font-mono">{post.date}</span>
                                     </div>
 
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block group/title">
-                                      <h3 className="text-sm font-bold text-white group-hover/title:text-[#FFFFFF] group-hover/title:underline transition-all leading-snug line-clamp-2">
+                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="block">
+                                      <h3 className="text-sm font-bold text-white group-hover/card:text-white group-hover/card:underline transition-colors leading-snug">
                                         {post.title}
                                       </h3>
                                     </a>
-                                    <p className="text-xs text-[#AEAEB2] mt-1.5 leading-relaxed line-clamp-2">{post.description}</p>
+                                    <p className="text-xs text-[#AEAEB2] mt-2 leading-relaxed">{post.description}</p>
                                   </div>
 
-                                  <div className="flex items-center justify-between mt-3.5 pt-2.5 border-t border-[#2C2C2E] text-xs">
+                                  <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[#2C2C2E]/60 text-xs flex-wrap gap-3">
                                     <span className="text-[#8E8E93] flex items-center gap-1 text-[10px]">
                                       <Clock className="w-3 h-3" /> 5 min read
                                     </span>
-                                    <a href={urlToGo} target="_blank" rel="noreferrer" onClick={() => handlePostClick(post)} className="text-[#FFFFFF] font-semibold text-[11px] flex items-center gap-1 group-hover:underline">
-                                      <span>Read Thought</span>
-                                      <ArrowRight className="w-3 h-3 group-hover/card:translate-x-0.5 transition-transform" />
-                                    </a>
+                                    <div className="flex items-center gap-2">
+                                      <CopyButton slug={post.shortLinkSlug} fallbackUrl={post.url} />
+                                      <a 
+                                        href={urlToGo} 
+                                        target="_blank" 
+                                        rel="noreferrer" 
+                                        onClick={() => handlePostClick(post)} 
+                                        className="text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 font-semibold text-[11px] flex items-center gap-1 px-3 py-1 rounded-full whitespace-nowrap"
+                                      >
+                                        <span>Read Thought</span>
+                                        <ArrowRight className="w-3 h-3" />
+                                      </a>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
