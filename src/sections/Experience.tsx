@@ -8,8 +8,9 @@ const experiences = [
     period: "Feb 2026 - Present",
     location: "Bengaluru, Karnataka, India (Hybrid)",
     points: [
-      "Design and scale backend services for high-reliability e-commerce checkout flows.",
-      "Build and optimize Python/FastAPI APIs on Kubernetes, improving performance, observability, and fault tolerance in collaboration with product, QA, and frontend teams."
+      "Build Python/FastAPI services for high-reliability e-commerce checkout and order-processing workflows on Kubernetes.",
+      "Implemented Kafka-based acknowledgement processing, validation and status updates across asynchronous order workflows.",
+      "Improved reliability through structured error handling, retries, observability and integration testing."
     ],
     tech: ["Python", "FastAPI", "Kubernetes", "Kafka", "Grafana", "Microservices"]
   },
@@ -19,11 +20,9 @@ const experiences = [
     period: "Oct 2024 - Present",
     location: "Bengaluru",
     points: [
-      "Architected and built AI-driven factory analytics backend processing 10,000+ daily requests using FastAPI, PostgreSQL, Redis, and MongoDB time-series storage.",
-      "Designed and implemented a multi-channel notification system from scratch (push, email, mobile) processing 5,000+ alerts per day with 99.5% reliability.",
-      "Slashed API P95 latency from 800ms to 300ms (60%) via strategic Redis caching and deep database query optimization.",
-      "Raised Pytest coverage to 85%, preventing 30+ production regressions while achieving 4× faster queries via schema redesign and indexing.",
-      "Orchestrated development across FastAPI microservices, Django Admin, and Flutter apps supporting Web, Android, and iOS."
+      "Built industrial IoT analytics APIs using FastAPI, PostgreSQL, Redis and MongoDB, processing 10,000+ daily requests.",
+      "Integrated rule-based and ML-generated anomaly insights into production, energy and cycle-time analytics workflows.",
+      "Designed a multi-channel alerting system with retries and failure handling, processing 5,000+ notifications daily."
     ],
     tech: ["FastAPI", "PostgreSQL", "Redis", "MongoDB", "AWS", "Docker"]
   },

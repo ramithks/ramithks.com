@@ -10,28 +10,28 @@ import { trackLinkClick, trackButtonClick } from "../lib/analytics";
 const projects = [
   {
     title: "AlgoHabit",
-    category: "AI-POWERED // ED-TECH",
-    desc: "AI-powered DSA learning platform designed around habit formation, streaks, and gamified progression. 50+ active users.",
-    tech: ["React", "Supabase", "OpenRouter AI", "PWA"],
+    category: "AI-POWERED // LANGCHAIN & RAG",
+    desc: "AI-powered DSA learning platform using LangChain LLM pipelines and RAG for personalized, syllabus-grounded learning plans.",
+    tech: ["React", "LangChain", "RAG", "pgvector", "OpenRouter AI", "Supabase", "PWA"],
     link: "https://algohabit.com",
     github: null,
     details: {
-        problem: "Students struggle to maintain consistency in learning DSA. Existing platforms lack gamification and personalized learning plans.",
-        solution: "Built a Progressive Web App (PWA) with offline-first architecture. Integrated AI via OpenRouter to convert syllabi into structured learning plans.",
-        impact: "Achieved 95+ Lighthouse score. AI pipeline reduced content costs by 70%. Improved 30-day user retention by 60%."
+        problem: "Students struggle to maintain consistency in learning DSA and need syllabus-grounded personalized learning paths.",
+        solution: "Built a LangChain-based LLM pipeline using OpenRouter, prompt templates, structured output parsing, retries and model fallback. Implemented a RAG pipeline using document chunking, embeddings and pgvector-based semantic search.",
+        impact: "Achieved 95+ Lighthouse score. Syllabus-grounded RAG recommendations reduced content generation costs by 70% while improving 30-day user retention by 60%."
     }
   },
   {
     title: "Ledgerly",
-    category: "FINTECH // ML",
-    desc: "Smart finance tracker with predictive categorization (Logistic Regression) and expense forecasting (ARIMA).",
-    tech: ["FastAPI", "React", "ML (TF-IDF)", "Pytest"],
+    category: "FINTECH // CLASSICAL ML",
+    desc: "Smart finance tracker with scikit-learn transaction classification, spending trend forecasting, and MAD anomaly detection.",
+    tech: ["FastAPI", "React", "scikit-learn", "MLflow", "PostgreSQL", "Pytest"],
     link: null,
     github: null,
     details: {
-        problem: "Managing multiple subscriptions and forecasting future expenses is manually intensive for users.",
-        solution: "Developed ML pipelines for 88% accurate subscription classification and MAD-based anomaly detection.",
-        impact: "Achieved 92% code coverage with Pytest. Categorized transactions with 88% accuracy across 50+ categories."
+        problem: "Managing multiple subscriptions and accurately categorizing transactions and anomalies.",
+        solution: "Built scikit-learn pipelines using TF-IDF and Logistic Regression for classification, statistical forecasting for spending trends, and MAD-based anomaly detection served through FastAPI endpoints with Pydantic validation.",
+        impact: "Used MLflow for experiment tracking and model metrics. Achieved 92% code coverage with Pytest across 40+ endpoints."
     }
   },
   {

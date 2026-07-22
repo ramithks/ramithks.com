@@ -58,11 +58,10 @@ export const About = () => {
                     </div>
                     <div className="prose prose-invert prose-lg text-gray-300">
                         <p>
-                            Senior Backend Engineer with 4+ years of experience building high-performance APIs and distributed systems using Python (FastAPI) and AWS. 
-                            Expert in delivering sub-300ms P95 latency, 4× query performance gains, and scaling platforms handling 10,000+ daily requests.
+                            Senior Backend Engineer with 4+ years of experience building scalable Python/FastAPI services, distributed systems and cloud-native applications.
                         </p>
                         <p>
-                            Focused on leading teams and shipping reliable, production-grade software.
+                            Experienced in developing AI-enabled backend features using LangChain, LLM APIs, RAG pipelines and lightweight machine-learning models.
                         </p>
                     </div>
                 </div>

@@ -1,82 +1,104 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import type { Post } from "../../lib/db";
+import { db } from "../../lib/db";
+import type { SocialLink, Post, ShortLink, HubStatus } from "../../lib/db";
 import {
   Lock, ArrowLeft, Plus, Edit2, Trash2,
   ExternalLink, BarChart3, Layers, Sparkles,
-  TrendingUp, Smartphone, Copy, CheckCircle2
+  TrendingUp, Link2, MousePointerClick, Smartphone, Gauge
 } from "lucide-react";
 
 import { PostFormModal } from "./components/PostFormModal";
 import { ShortLinkFormModal } from "./components/ShortLinkFormModal";
 import { WidgetController } from "./components/WidgetController";
 
-const AdminCopyButton = ({ slug }: { slug: string }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    const fullLink = `${window.location.origin}/l/${slug}`;
-    navigator.clipboard.writeText(fullLink).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <button
-      onClick={handleCopy}
-      className={`p-2 rounded-lg transition-all duration-300 border ${
-        copied
-          ? "bg-[#30D158]/10 border-[#30D158]/30 text-[#30D158] scale-[1.03]"
-          : "bg-purple-500/10 border-purple-500/20 hover:border-purple-500/40 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
-      }`}
-      title={copied ? "Copied!" : "Copy Short Link"}
-    >
-      {copied ? (
-        <CheckCircle2 className="w-3.5 h-3.5" />
-      ) : (
-        <Copy className="w-3.5 h-3.5" />
-      )}
-    </button>
-  );
-};
-
 export const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem("ramithks_admin_auth") === "true";
   });
   const [passcode, setPasscode] = useState<string>("");
-  const [passcodeAttempt, setPasscodeAttempt] = useState<string>(() => {
-    return sessionStorage.getItem("ramithks_admin_passcode") || "";
-  });
   const [authError, setAuthError] = useState<string>("");
-
-  const isPasscodeValid = useQuery(
-    api.auth.verifyPasscode,
-    passcodeAttempt ? { passcode: passcodeAttempt } : "skip"
-  );
-
-  useEffect(() => {
-    if (passcodeAttempt) {
-      if (isPasscodeValid === true) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem("ramithks_admin_auth", "true");
-        sessionStorage.setItem("ramithks_admin_passcode", passcodeAttempt);
-        setAuthError("");
-      } else if (isPasscodeValid === false) {
-        setAuthError("Access Denied. Incorrect admin key.");
-        setIsAuthenticated(false);
-        sessionStorage.removeItem("ramithks_admin_auth");
-        sessionStorage.removeItem("ramithks_admin_passcode");
-      }
-    }
-  }, [isPasscodeValid, passcodeAttempt]);
 
   // Tabs: 'posts' | 'widgets' | 'shortlinks'
   const [activeTab, setActiveTab] = useState<string>("posts");
+
+  // Data states
+  const [posts, setPosts] = useState<Post[]>(() => db.getPosts());
+  const [links, setLinks] = useState<SocialLink[]>(() => db.getLinks());
+  const [shortLinks, setShortLinks] = useState<ShortLink[]>(() => db.getShortLinks());
+
+  // Editing / Adding Modals states
+  const [postForm, setPostForm] = useState<Partial<Post> | null>(null);
+  const [shortLinkForm, setShortLinkForm] = useState<Partial<ShortLink> | null>(null);
+  const [widgetForm, setWidgetForm] = useState<HubStatus | null>(() => db.getStatus());
+
+  // Success indicator for widget updates
+  const [widgetSavedSuccess, setWidgetSavedSuccess] = useState<boolean>(false);
+
+  const totalPostClicks = posts.reduce((sum, post) => sum + (post.clicks || 0), 0);
+  const totalSocialClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+  const totalShortLinkClicks = shortLinks.reduce((sum, shortLink) => sum + (shortLink.clicks || 0), 0);
+  const livePosts = posts.filter((post) => post.openInApp).length;
+  const liveLinks = links.filter((link) => link.openInApp).length;
+  const liveShortLinks = shortLinks.filter((shortLink) => shortLink.openInApp).length;
+  const instagramPosts = posts.filter((post) => post.type === "instagram").length;
+  const xPosts = posts.filter((post) => post.type === "twitter").length;
+  const uniquePostPlatforms = new Set(posts.map((post) => post.type)).size;
+
+  const feedMetricCards = [
+    {
+      label: "Posts",
+      value: posts.length,
+      detail: `${uniquePostPlatforms} platforms`,
+      icon: <Layers className="w-4 h-4" />,
+    },
+    {
+      label: "Feed clicks",
+      value: totalPostClicks,
+      detail: "Clicks from timeline cards",
+      icon: <MousePointerClick className="w-4 h-4" />,
+    },
+    {
+      label: "Open in app",
+      value: livePosts,
+      detail: `${posts.length - livePosts} posts stay in web`,
+      icon: <Smartphone className="w-4 h-4" />,
+    },
+    {
+      label: "Instagram / X",
+      value: instagramPosts + xPosts,
+      detail: `${instagramPosts} Instagram + ${xPosts} X posts`,
+      icon: <TrendingUp className="w-4 h-4" />,
+    },
+  ];
+
+  const socialMetricCards = [
+    {
+      label: "Social links",
+      value: links.length,
+      detail: `${liveLinks} open in app`,
+      icon: <Link2 className="w-4 h-4" />,
+    },
+    {
+      label: "Short links",
+      value: shortLinks.length,
+      detail: `${liveShortLinks} open in app`,
+      icon: <Gauge className="w-4 h-4" />,
+    },
+    {
+      label: "Profile clicks",
+      value: totalSocialClicks,
+      detail: "Clicks from social buttons",
+      icon: <MousePointerClick className="w-4 h-4" />,
+    },
+    {
+      label: "Shortcut clicks",
+      value: totalShortLinkClicks,
+      detail: "Clicks from short links",
+      icon: <Smartphone className="w-4 h-4" />,
+    },
+  ];
 
   // Autofill hook
   useEffect(() => {
@@ -128,72 +150,20 @@ export const AdminDashboard = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setAuthError("");
-    setPasscodeAttempt(passcode);
+    // Default mock admin key is 'admin'
+    if (passcode.toLowerCase() === "admin") {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("ramithks_admin_auth", "true");
+      setAuthError("");
+    } else {
+      setAuthError("Access Denied. Incorrect admin key.");
+    }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setPasscode("");
-    setPasscodeAttempt("");
     sessionStorage.removeItem("ramithks_admin_auth");
-    sessionStorage.removeItem("ramithks_admin_passcode");
   };
-
-  // Convex queries
-  const convexPosts = useQuery(api.posts.get);
-  const convexLinks = useQuery(api.links.get);
-  const convexShortLinks = useQuery(api.shortLinks.get);
-  const convexStatus = useQuery(api.hubStatus.get);
-
-  // Convex mutations
-  const createPost = useMutation(api.posts.create);
-  const updatePost = useMutation(api.posts.update);
-  const deletePostMutation = useMutation(api.posts.deletePost);
-  const createShortLink = useMutation(api.shortLinks.create);
-  const updateShortLink = useMutation(api.shortLinks.update);
-  const deleteShortLinkMutation = useMutation(api.shortLinks.deleteLink);
-  const updateStatus = useMutation(api.hubStatus.update);
-  const saveSocialLinks = useMutation(api.links.saveAll);
-
-  // Data states
-  const [links, setLinks] = useState<any[]>([]);
-  const [widgetForm, setWidgetForm] = useState<any | null>(null);
-
-  // Sync links when loaded from database
-  useEffect(() => {
-    if (convexLinks !== undefined) {
-      setLinks(convexLinks.map((l: any) => ({ ...l, id: l._id })));
-    }
-  }, [convexLinks]);
-
-  // Sync widgetForm when loaded from database (only if not currently editing/dirty)
-  useEffect(() => {
-    if (convexStatus !== undefined && widgetForm === null) {
-      setWidgetForm(convexStatus);
-    }
-  }, [convexStatus, widgetForm]);
-
-  const posts = (convexPosts || []).map((p: any) => ({
-    ...p,
-    id: p._id,
-  }));
-  const shortLinks = (convexShortLinks || []).map((sl: any) => ({
-    ...sl,
-    id: sl.syncId || sl._id,
-  }));
-
-  // Editing / Adding Modals states
-  const [postForm, setPostForm] = useState<Partial<any> | null>(null);
-  const [shortLinkForm, setShortLinkForm] = useState<Partial<any> | null>(null);
-
-  // Success indicator for widget updates
-  const [widgetSavedSuccess, setWidgetSavedSuccess] = useState<boolean>(false);
-
-  const totalPostClicks = posts.reduce((sum: number, post: any) => sum + (post.clicks || 0), 0);
-  const totalSocialClicks = links.reduce((sum: number, link: any) => sum + (link.clicks || 0), 0);
-  const totalShortLinkClicks = shortLinks.reduce((sum: number, shortLink: any) => sum + (shortLink.clicks || 0), 0);
-  const totalClicks = totalPostClicks + totalSocialClicks + totalShortLinkClicks;
 
   // --- POSTS CRUD ---
   const savePostSubmit = (e: React.FormEvent) => {
@@ -204,130 +174,160 @@ export const AdminDashboard = () => {
     // Description is required for Twitter posts (the tweet body)
     if (postForm.type === "twitter" && !postForm.description) return;
 
+    let updatedPosts = [...posts];
     const postType = postForm.type || "blog";
     const postTitle = postForm.title || (postType === "twitter" ? (postForm.description || "").slice(0, 60) : "Untitled Post");
 
-    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
-
-    const payload = {
+    const parsedPost: Partial<Post> = {
+      ...postForm,
       title: postTitle,
-      tag: postForm.tag || "Travel",
-      thumbnail: postForm.thumbnail || "",
-      description: postForm.description || "",
-      url: postForm.url || "",
-      openInApp: !!postForm.openInApp,
-      date: postForm.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      type: postType as "blog" | "youtube" | "instagram" | "twitter" | "linkedin",
+      type: postType,
       likes: postForm.likes ? Number(postForm.likes) : undefined,
       views: postForm.views ? Number(postForm.views) : undefined,
       comments: postForm.comments ? Number(postForm.comments) : undefined,
       reposts: postForm.reposts ? Number(postForm.reposts) : undefined,
       duration: postForm.duration || undefined,
       author: postForm.author || undefined,
-      shortLinkSlug: postForm.shortLinkSlug || undefined,
     };
 
-    if (postForm._id) {
+    if (postForm.id) {
       // Edit
-      updatePost({ id: postForm._id, passcode: passcodeToken, ...payload })
-        .then(() => setPostForm(null))
-        .catch(err => alert(err.message || "Failed to update post"));
+      updatedPosts = updatedPosts.map(p => p.id === postForm.id ? { ...p, ...parsedPost } as Post : p);
     } else {
       // Add
-      createPost({ passcode: passcodeToken, ...payload })
-        .then(() => setPostForm(null))
-        .catch(err => alert(err.message || "Failed to create post"));
+      const newPost: Post = {
+        id: 'post-' + Date.now(),
+        title: postTitle,
+        tag: parsedPost.tag || "Travel",
+        thumbnail: parsedPost.thumbnail || "",
+        description: parsedPost.description || "",
+        url: parsedPost.url || "",
+        openInApp: !!parsedPost.openInApp,
+        date: parsedPost.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        clicks: 0,
+        type: postType,
+        likes: parsedPost.likes,
+        views: parsedPost.views,
+        comments: parsedPost.comments,
+        reposts: parsedPost.reposts,
+        duration: parsedPost.duration,
+        author: parsedPost.author,
+      };
+      updatedPosts.unshift(newPost);
+    }
+
+    db.savePosts(updatedPosts);
+    setPosts(updatedPosts);
+    setPostForm(null);
+  };
+
+  const deletePost = (id: string) => {
+    if (confirm("Are you sure you want to delete this post?")) {
+      const updatedPosts = posts.filter(p => p.id !== id);
+      db.savePosts(updatedPosts);
+      setPosts(updatedPosts);
     }
   };
 
-  const deletePost = (id: any) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
-      deletePostMutation({ id, passcode: passcodeToken }).catch(console.error);
-    }
-  };
+
 
   // --- SHORT LINKS CRUD ---
   const saveShortLinkSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!shortLinkForm || !shortLinkForm.slug || !shortLinkForm.url) return;
 
-    // Check duplicate slug (case-insensitive)
-    const duplicate = shortLinks.find(
-      (sl: any) => sl.slug.toLowerCase() === shortLinkForm.slug?.toLowerCase() && sl._id !== shortLinkForm._id
-    );
+    // Check duplicate slug
+    const duplicate = shortLinks.find(sl => sl.slug.toLowerCase() === shortLinkForm.slug?.toLowerCase() && sl.id !== shortLinkForm.id);
     if (duplicate) {
       alert("A short link with this slug already exists.");
       return;
     }
 
-    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
-
-    const payload = {
-      slug: shortLinkForm.slug.trim().toLowerCase(),
-      url: shortLinkForm.url,
-      openInApp: !!shortLinkForm.openInApp,
-    };
-
-    if (shortLinkForm._id) {
+    let updatedShortLinks = [...shortLinks];
+    if (shortLinkForm.id) {
       // Edit
-      updateShortLink({ id: shortLinkForm._id, passcode: passcodeToken, ...payload })
-        .then(() => setShortLinkForm(null))
-        .catch(err => alert(err.message || "Failed to update short link"));
+      updatedShortLinks = updatedShortLinks.map(sl => sl.id === shortLinkForm.id ? { ...sl, ...shortLinkForm } as ShortLink : sl);
     } else {
       // Add
-      createShortLink({ passcode: passcodeToken, ...payload })
-        .then(() => setShortLinkForm(null))
-        .catch(err => alert(err.message || "Failed to create short link"));
+      const newSL: ShortLink = {
+        id: 'sl-' + Date.now(),
+        slug: shortLinkForm.slug.trim().toLowerCase(),
+        url: shortLinkForm.url || "",
+        openInApp: !!shortLinkForm.openInApp,
+        clicks: 0
+      };
+      updatedShortLinks.push(newSL);
     }
+
+    db.saveShortLinks(updatedShortLinks);
+    setShortLinks(updatedShortLinks);
+    setShortLinkForm(null);
   };
 
-  const deleteShortLink = (id: any) => {
+  const deleteShortLink = (id: string) => {
     if (confirm("Are you sure you want to delete this short link?")) {
-      const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
-      deleteShortLinkMutation({ id, passcode: passcodeToken }).catch(console.error);
+      const updatedShortLinks = shortLinks.filter(sl => sl.id !== id);
+      db.saveShortLinks(updatedShortLinks);
+      setShortLinks(updatedShortLinks);
     }
   };
 
   // --- WIDGETS CONFIG ---
-  const saveWidgetsSubmit = async (e: React.FormEvent) => {
+  const saveWidgetsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!widgetForm) return;
 
-    const passcodeToken = sessionStorage.getItem("ramithks_admin_passcode") || "";
+    db.saveStatus(widgetForm);
+    db.saveLinks(links);
 
-    try {
-      // 1. Update status
-      await updateStatus({
-        passcode: passcodeToken,
-        statusEmoji: widgetForm.statusEmoji,
-        statusText: widgetForm.statusText,
-        spotifyActive: !!widgetForm.spotifyActive,
-        spotifyTrack: widgetForm.spotifyTrack || "",
-        spotifyArtist: widgetForm.spotifyArtist || "",
-        profilePhoto: widgetForm.profilePhoto,
-        profileName: widgetForm.profileName,
-        profileSubtitle: widgetForm.profileSubtitle,
-        profileBio: widgetForm.profileBio,
-        quoteText: widgetForm.quoteText,
-      });
+    // Sync Social Link short link slugs to the ShortLink array
+    let updatedShortLinks = [...shortLinks];
+    links.forEach(link => {
+      const syncId = `sl-sync-${link.id}`;
+      if (link.shortLinkSlug) {
+        // If a redirect is configured
+        const existingIndex = updatedShortLinks.findIndex(sl => sl.id === syncId);
+        if (existingIndex !== -1) {
+          // Update
+          updatedShortLinks[existingIndex] = {
+            ...updatedShortLinks[existingIndex],
+            slug: link.shortLinkSlug.trim().toLowerCase(),
+            url: link.url,
+            openInApp: link.openInApp,
+          };
+        } else {
+          // Add new
+          updatedShortLinks.push({
+            id: syncId,
+            slug: link.shortLinkSlug.trim().toLowerCase(),
+            url: link.url,
+            openInApp: link.openInApp,
+            clicks: 0
+          });
+        }
+      } else {
+        // If redirect is disabled, remove any synced short link for this social
+        updatedShortLinks = updatedShortLinks.filter(sl => sl.id !== syncId);
+      }
+    });
 
-      // 2. Save all social links (the mutation also handles syncing short links on the backend!)
-      const formattedLinks = links.map(link => ({
-        id: link._id,
-        label: link.label,
-        url: link.url,
-        icon: link.icon,
-        openInApp: !!link.openInApp,
-        clicks: link.clicks || 0,
-        shortLinkSlug: link.shortLinkSlug || undefined,
-      }));
-      await saveSocialLinks({ passcode: passcodeToken, links: formattedLinks });
+    db.saveShortLinks(updatedShortLinks);
+    setShortLinks(updatedShortLinks);
 
-      setWidgetSavedSuccess(true);
-      setTimeout(() => setWidgetSavedSuccess(false), 3000);
-    } catch (err: any) {
-      alert(err.message || "Failed to save profile state");
+    setWidgetSavedSuccess(true);
+    setTimeout(() => setWidgetSavedSuccess(false), 3000);
+  };
+
+
+
+  const handleResetDB = () => {
+    if (confirm("Warning: This will reset all database items to their defaults (losing any custom entries/clicks). Proceed?")) {
+      db.resetDB();
+      setPosts(db.getPosts());
+      setLinks(db.getLinks());
+      setShortLinks(db.getShortLinks());
+      const statusData = db.getStatus();
+      setWidgetForm(statusData);
     }
   };
 
@@ -356,7 +356,7 @@ export const AdminDashboard = () => {
                 type="password"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter admin passcode"
+                placeholder="Passcode (Default: admin)"
                 className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/40 transition-colors placeholder:text-white/20 text-white"
                 required
               />
@@ -400,14 +400,21 @@ export const AdminDashboard = () => {
           </Link>
           <div>
             <h1 className="font-extrabold text-lg tracking-tight text-white">Admin Dashboard</h1>
-            <p className="text-[10px] text-[#30D158] font-mono flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#30D158] animate-pulse" />
-              CONNECTED / CONVEX BACKEND
+            <p className="text-[10px] text-[#FA2356] font-mono flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FA2356] animate-pulse" />
+              CONNECTED / LOCAL STORAGE DB
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleResetDB}
+            className="px-3 py-1.5 rounded-lg border border-white/10 hover:border-red-500/30 text-white/60 hover:text-red-400 hover:bg-red-500/5 text-xs font-medium transition-all"
+            title="Reset DB to initial seed defaults"
+          >
+            Reset Seed Data
+          </button>
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-medium transition-colors"
@@ -439,15 +446,6 @@ export const AdminDashboard = () => {
             <span>Profile & Socials</span>
             <span className={`ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${activeTab === 'widgets' ? 'bg-black/10 text-black' : 'bg-[#FA2356]/10 text-[#FA2356] border border-[#FA2356]/10'}`}>Live</span>
           </button>
-
-          <button
-            onClick={() => setActiveTab("metrics")}
-            className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm transition-all ${activeTab === 'metrics' ? 'bg-[#FFFFFF] text-[#000000] shadow-lg' : 'bg-white/[0.02] border border-white/5 hover:border-white/15 hover:bg-white/[0.04]'}`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Metrics & Analytics</span>
-            <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full ${activeTab === 'metrics' ? 'bg-black/10 text-black' : 'bg-white/10 text-white/60'}`}>{totalClicks}</span>
-          </button>
         </aside>
 
         {/* Content Area */}
@@ -470,11 +468,26 @@ export const AdminDashboard = () => {
                 </button>
               </div>
 
-
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                {feedMetricCards.map((card) => (
+                  <div key={card.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-white">
+                        {card.icon}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#86868B]">{card.label}</span>
+                    </div>
+                    <div className="mt-4">
+                      <div className="text-2xl font-extrabold tracking-tight text-white">{card.value}</div>
+                      <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">{card.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               {/* Grid of posts */}
               <div className="space-y-4">
-                {posts.map((post: any) => (
+                {posts.map((post) => (
                   <div key={post.id} className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all flex flex-col md:flex-row justify-between gap-4">
                     <div className="flex gap-4">
                       {/* Thumbnail preview */}
@@ -489,11 +502,6 @@ export const AdminDashboard = () => {
                           {post.openInApp && (
                             <span className="text-[8px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/10">App Opener</span>
                           )}
-                          {post.shortLinkSlug && (
-                            <span className="text-[9px] font-mono font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/10">
-                              /l/{post.shortLinkSlug}
-                            </span>
-                          )}
                         </div>
                         <h3 className="font-bold text-sm mt-1">{post.title || post.description?.slice(0, 50) + "..."}</h3>
                         <p className="text-xs text-[#86868B] line-clamp-2 mt-1">{post.description}</p>
@@ -506,11 +514,14 @@ export const AdminDashboard = () => {
                     </div>
 
                     {/* Stats & Actions */}
-                    <div className="flex md:flex-col items-end justify-end border-t md:border-t-0 border-white/5 pt-3 md:pt-0 shrink-0">
-                      <div className="flex gap-2">
-                        {post.shortLinkSlug && (
-                          <AdminCopyButton slug={post.shortLinkSlug} />
-                        )}
+                    <div className="flex md:flex-col items-end justify-between border-t md:border-t-0 border-white/5 pt-3 md:pt-0 shrink-0">
+                      <div className="flex items-center gap-1 text-[#86868B]" title="Clicks through personal hub">
+                        <BarChart3 className="w-4 h-4 text-white/40" />
+                        <span className="text-xs font-mono font-bold text-[#F5F5F7]">{post.clicks}</span>
+                        <span className="text-[10px] text-[#86868B]">clicks</span>
+                      </div>
+
+                      <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => setPostForm(post)}
                           className="p-2 rounded-lg bg-white/5 border border-white/5 hover:border-white/15 text-white/70 hover:text-white transition-colors"
@@ -552,6 +563,23 @@ export const AdminDashboard = () => {
                 </span>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                {socialMetricCards.map((card) => (
+                  <div key={card.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-white">
+                        {card.icon}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#86868B]">{card.label}</span>
+                    </div>
+                    <div className="mt-4">
+                      <div className="text-2xl font-extrabold tracking-tight text-white">{card.value}</div>
+                      <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">{card.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <WidgetController
                 widgetForm={widgetForm}
                 onChange={setWidgetForm}
@@ -564,258 +592,6 @@ export const AdminDashboard = () => {
                 onEditShortLink={(sl) => setShortLinkForm(sl)}
                 onDeleteShortLink={deleteShortLink}
               />
-            </div>
-          )}
-
-          {/* TAB 3: METRICS & ANALYTICS */}
-          {activeTab === "metrics" && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                <div>
-                  <h2 className="text-xl font-extrabold tracking-tight">Metrics & Analytics</h2>
-                  <p className="text-xs text-[#86868B]">Real-time traffic and engagement breakdown across your channels</p>
-                </div>
-                <span className="text-[10px] font-bold text-purple-400 bg-purple-500/10 border border-purple-500/15 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-                  Analytics Live
-                </span>
-              </div>
-
-              {/* Grid with 4 Overview Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {/* Card 1: Total Analytics Hub */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 blur-2xl rounded-full pointer-events-none" />
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                      <BarChart3 className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#86868B]">Total Hub Clicks</span>
-                  </div>
-                  <div className="mt-4">
-                    <div className="text-3xl font-extrabold tracking-tight text-white">{totalClicks}</div>
-                    <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">Aggregated visitor interactions</p>
-                  </div>
-                </div>
-
-                {/* Card 2: Timeline Performance */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-2xl rounded-full pointer-events-none" />
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                      <Layers className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#86868B]">Timeline Feed</span>
-                  </div>
-                  <div className="mt-4">
-                    <div className="text-3xl font-extrabold tracking-tight text-white">{totalPostClicks}</div>
-                    <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">
-                      {totalClicks > 0 ? ((totalPostClicks / totalClicks) * 100).toFixed(0) : 0}% click share
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card 3: Social Hub CTR */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-pink-500/5 blur-2xl rounded-full pointer-events-none" />
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400">
-                      <Sparkles className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#86868B]">Profile Socials</span>
-                  </div>
-                  <div className="mt-4">
-                    <div className="text-3xl font-extrabold tracking-tight text-white">{totalSocialClicks}</div>
-                    <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">
-                      {totalClicks > 0 ? ((totalSocialClicks / totalClicks) * 100).toFixed(0) : 0}% click share
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card 4: Direct Redirections */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 relative overflow-hidden group hover:border-white/20 transition-all">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 blur-2xl rounded-full pointer-events-none" />
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                      <Smartphone className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#86868B]">Short Shortcuts</span>
-                  </div>
-                  <div className="mt-4">
-                    <div className="text-3xl font-extrabold tracking-tight text-white">{totalShortLinkClicks}</div>
-                    <p className="text-[11px] text-[#AEAEB2] mt-1 leading-relaxed">
-                      {totalClicks > 0 ? ((totalShortLinkClicks / totalClicks) * 100).toFixed(0) : 0}% click share
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Platform Insights & Traffic Distribution */}
-              <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-6">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-purple-400" />
-                  Platform Insights & Traffic Distribution
-                </h3>
-                
-                <div className="space-y-4">
-                  {(() => {
-                    const getUrlPlatform = (url: string) => {
-                      const u = url.toLowerCase();
-                      if (u.includes("youtube.com") || u.includes("youtu.be")) return "youtube";
-                      if (u.includes("instagram.com")) return "instagram";
-                      if (u.includes("twitter.com") || u.includes("x.com")) return "twitter";
-                      if (u.includes("linkedin.com")) return "linkedin";
-                      return "blog";
-                    };
-
-                    const platformStats = [
-                      { id: "instagram", name: "Instagram", color: "from-[#F58529] via-[#DD2A7B] to-[#8134AF]" },
-                      { id: "youtube", name: "YouTube", color: "from-[#FF0000] to-[#B30000]" },
-                      { id: "twitter", name: "X (Twitter)", color: "from-[#1DA1F2] to-[#0d8ecf]" },
-                      { id: "linkedin", name: "LinkedIn", color: "from-[#0077B5] to-[#005582]" },
-                      { id: "blog", name: "Blog / Gear / Others", color: "from-[#6200EE] to-[#3700B3]" },
-                    ];
-
-                    const platformData = platformStats.map(p => {
-                      const postClicks = posts.filter((post: any) => post.type === p.id).reduce((sum: number, post: any) => sum + (post.clicks || 0), 0);
-                      const socialClicks = links.filter((l: any) => l.icon === (p.id === "twitter" ? "x" : p.id === "blog" ? "globe" : p.id)).reduce((sum: number, l: any) => sum + (l.clicks || 0), 0);
-                      const shortClicks = shortLinks.filter((sl: any) => getUrlPlatform(sl.url) === p.id).reduce((sum: number, sl: any) => sum + (sl.clicks || 0), 0);
-                      
-                      const totalPlatformClicks = postClicks + socialClicks + shortClicks;
-                      const itemCount = posts.filter((post: any) => post.type === p.id).length + links.filter((l: any) => l.icon === (p.id === "twitter" ? "x" : p.id === "blog" ? "globe" : p.id)).length;
-                      
-                      return {
-                        ...p,
-                        clicks: totalPlatformClicks,
-                        items: itemCount,
-                      };
-                    }).filter(p => p.items > 0 || p.clicks > 0);
-
-                    if (platformData.length === 0) {
-                      return (
-                        <div className="text-center py-8 text-xs text-[#86868B] border border-white/5 rounded-xl bg-black/20">
-                          No active platforms or metrics found. Add social links or feed posts to see analytics.
-                        </div>
-                      );
-                    }
-
-                    const maxPlatformClicks = Math.max(...platformData.map(d => d.clicks), 1);
-
-                    return platformData.map(p => {
-                      const percentage = ((p.clicks / maxPlatformClicks) * 100).toFixed(0);
-                      const pctOfTotal = totalClicks > 0 ? ((p.clicks / totalClicks) * 100).toFixed(0) : 0;
-                      return (
-                        <div key={p.id} className="space-y-1.5">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="font-semibold text-white">{p.name}</span>
-                            <div className="flex items-center gap-3">
-                              <span className="text-[#86868B]">{p.items} active assets</span>
-                              <span className="font-bold text-white font-mono">{p.clicks} clicks ({pctOfTotal}%)</span>
-                            </div>
-                          </div>
-                          {/* CSS percentage bar chart */}
-                          <div className="w-full h-3 rounded-full bg-white/[0.02] border border-white/5 overflow-hidden">
-                            <div 
-                              className={`h-full bg-gradient-to-r ${p.color} transition-all duration-500 rounded-full`}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              </div>
-
-              {/* High-CTR Leaderboards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* 1. Top Posts */}
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-purple-400">Top Performing Posts</h4>
-                  <div className="space-y-3.5">
-                    {(() => {
-                      const topPosts = [...posts].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);
-                      const maxPostClicks = Math.max(...topPosts.map(p => p.clicks || 0), 1);
-                      return topPosts.map((p, idx) => {
-                        const widthPct = ((p.clicks || 0) / maxPostClicks) * 100;
-                        return (
-                          <div key={p.id} className="space-y-1">
-                            <div className="flex items-center justify-between gap-3 text-xs">
-                              <div className="flex items-center gap-1.5 truncate">
-                                <span className="text-[10px] font-bold text-purple-400 font-mono w-4 shrink-0">#{idx + 1}</span>
-                                <span className="font-semibold text-white truncate max-w-[140px]">{p.title || p.description}</span>
-                              </div>
-                              <span className="font-bold text-white shrink-0 font-mono">{p.clicks} clicks</span>
-                            </div>
-                            <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-                              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${widthPct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      });
-                    })()}
-                    {posts.length === 0 && <p className="text-xs text-white/30 text-center py-4">No posts found</p>}
-                  </div>
-                </div>
-
-                {/* 2. Top Social Links */}
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-blue-400">Top Social Buttons</h4>
-                  <div className="space-y-3.5">
-                    {(() => {
-                      const topSocialLinks = [...links].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);
-                      const maxSocialClicks = Math.max(...topSocialLinks.map(l => l.clicks || 0), 1);
-                      return topSocialLinks.map((l, idx) => {
-                        const widthPct = ((l.clicks || 0) / maxSocialClicks) * 100;
-                        return (
-                          <div key={l.id} className="space-y-1">
-                            <div className="flex items-center justify-between gap-3 text-xs">
-                              <div className="flex items-center gap-1.5 truncate">
-                                <span className="text-[10px] font-bold text-blue-400 font-mono w-4 shrink-0">#{idx + 1}</span>
-                                <span className="font-semibold text-white capitalize truncate">{l.label}</span>
-                                {l.shortLinkSlug && <span className="text-[8px] font-mono text-white/30">(/l/{l.shortLinkSlug})</span>}
-                              </div>
-                              <span className="font-bold text-white shrink-0 font-mono">{l.clicks} clicks</span>
-                            </div>
-                            <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-                              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${widthPct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                </div>
-
-                {/* 3. Top Short Links */}
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pink-400">Top Redirect URLs</h4>
-                  <div className="space-y-3.5">
-                    {(() => {
-                      const topShortLinks = [...shortLinks].sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);
-                      const maxShortClicks = Math.max(...topShortLinks.map(sl => sl.clicks || 0), 1);
-                      return topShortLinks.map((sl, idx) => {
-                        const widthPct = ((sl.clicks || 0) / maxShortClicks) * 100;
-                        return (
-                          <div key={sl.id} className="space-y-1">
-                            <div className="flex items-center justify-between gap-3 text-xs">
-                              <div className="flex items-center gap-1.5 truncate">
-                                <span className="text-[10px] font-bold text-pink-400 font-mono w-4 shrink-0">#{idx + 1}</span>
-                                <span className="font-semibold text-white font-mono truncate">/l/{sl.slug}</span>
-                              </div>
-                              <span className="font-bold text-white shrink-0 font-mono">{sl.clicks} clicks</span>
-                            </div>
-                            <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
-                              <div className="h-full bg-pink-500 rounded-full" style={{ width: `${widthPct}%` }} />
-                            </div>
-                          </div>
-                        );
-                      });
-                    })()}
-                    {shortLinks.length === 0 && <p className="text-xs text-white/30 text-center py-4">No shortcuts found</p>}
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
