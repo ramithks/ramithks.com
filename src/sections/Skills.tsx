@@ -1,6 +1,6 @@
 import { Reveal } from "../components/ui/Reveal";
 import { SpotlightCard } from "../components/ui/SpotlightCard";
-import { Code2, Database, Cloud, Server, Activity } from "lucide-react";
+import { Code2, Database, Server, Activity, Brain, Layers } from "lucide-react";
 import { useSectionView } from "../hooks/useSectionView";
 
 const skillCategories = [
@@ -10,64 +10,53 @@ const skillCategories = [
     skills: [
       "Python",
       "FastAPI",
+      "AsyncIO",
+      "REST APIs",
       "Node.js",
       "TypeScript",
-      "AsyncIO",
-      "REST",
-      "gRPC",
-      "WebSockets",
     ],
   },
   {
-    icon: Server, // Reusing icon or could use Layout/Smartphone icon if imported
-    title: "Frontend & Mobile",
+    icon: Brain,
+    title: "Generative AI & Machine Learning",
     skills: [
-      "React",
-      "Flutter",
-      "React Native",
-      "Progressive Web Apps",
-      "Offline-First Architecture",
+      "LangChain",
+      "LangGraph",
+      "LLM API Integration",
+      "RAG",
+      "Prompt Engineering",
+      "Structured Outputs",
+      "Embeddings",
+      "scikit-learn",
+      "Model Serving",
     ],
   },
   {
     icon: Database,
-    title: "Databases",
+    title: "AI Data & Storage",
     skills: [
+      "pgvector",
+      "Vector Search",
       "PostgreSQL",
       "Redis",
       "MongoDB",
-      "MySQL",
-      "Query Optimization",
-      "Indexing",
-      "Schema Design",
-      "ACID Transactions",
+      "Pandas",
+      "NumPy",
     ],
   },
   {
     icon: Server,
-    title: "Systems & Architecture",
+    title: "Systems & Cloud",
     skills: [
       "Microservices",
-      "Distributed Systems",
+      "Kafka",
       "Event-Driven Architecture",
-      "Caching",
-      "Load Balancing",
-      "High Availability",
-      "Rate Limiting",
-      "API Gateway",
-      "Observability",
-    ],
-  },
-  {
-    icon: Cloud,
-    title: "Cloud & DevOps",
-    skills: [
-      "AWS (ECS, EC2, S3, CloudWatch, Lambda)",
+      "Kubernetes",
       "Docker",
-      "Terraform",
+      "AWS",
       "GitHub Actions",
       "CI/CD",
-      "Infrastructure Automation",
+      "Observability",
     ],
   },
   {
@@ -76,9 +65,16 @@ const skillCategories = [
     skills: [
       "Pytest",
       "Integration Testing",
-      "SLO/SLI Monitoring",
-      "Incident Management",
+      "Retry and Fallback Workflows",
       "Root Cause Analysis",
+    ],
+  },
+  {
+    icon: Layers,
+    title: "Additional",
+    skills: [
+      "React",
+      "Flutter",
     ],
   },
 ];
