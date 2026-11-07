@@ -1,4 +1,4 @@
-# Ramith K S | Senior Backend Engineer Portfolio
+# Ramith K S | Backend & Applied AI Engineer Portfolio
 
 > A High-Performance, Interactive, 3D-Enhanced Portfolio built with React, Vite, and Three.js.
 
@@ -71,4 +71,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Developed by [Ramith K S](https://github.com/ramithks)**
-
