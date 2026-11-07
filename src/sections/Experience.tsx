@@ -3,41 +3,65 @@ import { useSectionView } from "../hooks/useSectionView";
 
 const experiences = [
   {
-    company: "Thermo Fisher Scientific",
-    role: "Senior Backend Engineer",
-    period: "Feb 2026 - Present",
-    location: "Bengaluru, Karnataka, India (Hybrid)",
-    points: [
-      "Build Python/FastAPI services for high-reliability e-commerce checkout and order-processing workflows on Kubernetes.",
-      "Implemented Kafka-based acknowledgement processing, validation and status updates across asynchronous order workflows.",
-      "Improved reliability through structured error handling, retries, observability and integration testing."
+    "company": "Kanmalai Technologies | Client: Thermo Fisher Scientific",
+    "role": "Software Development Engineer II",
+    "period": "Feb 2026 - Present",
+    "location": "Bengaluru, Karnataka, India (Hybrid)",
+    "points": [
+      "Develop Python/FastAPI RESTful microservices for checkout and order processing on Kubernetes, with structured errors, retries and integration tests.",
+      "Implement Kafka-based acknowledgement processing, validation and status updates across asynchronous order workflows."
     ],
-    tech: ["Python", "FastAPI", "Kubernetes", "Kafka", "Grafana", "Microservices"]
+    "tech": [
+      "Python",
+      "FastAPI",
+      "Kubernetes",
+      "Kafka",
+      "Grafana",
+      "Microservices"
+    ]
   },
   {
-    company: "Zolnoi Innovations",
-    role: "Backend Engineer",
-    period: "Oct 2024 - Present",
-    location: "Bengaluru",
-    points: [
-      "Built industrial IoT analytics APIs using FastAPI, PostgreSQL, Redis and MongoDB, processing 10,000+ daily requests.",
-      "Integrated rule-based and ML-generated anomaly insights into production, energy and cycle-time analytics workflows.",
-      "Designed a multi-channel alerting system with retries and failure handling, processing 5,000+ notifications daily."
+    "company": "Zolnoi Innovations",
+    "role": "Software Development Engineer",
+    "period": "Oct 2024 - Jan 2026",
+    "location": "Bengaluru",
+    "points": [
+      "Led backend API development and maintenance for the application platform, working with engineering and product teams.",
+      "Integrated database and reporting services, improving API error handling, reliability and system performance."
     ],
-    tech: ["FastAPI", "PostgreSQL", "Redis", "MongoDB", "AWS", "Docker"]
+    "tech": [
+      "FastAPI",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+      "APScheduler",
+      "Docker",
+      "AWS",
+      "Django",
+      "Flutter"
+    ]
   },
   {
-    company: "JustPoll (Streetlab Internet Pvt Ltd)",
-    role: "Founder & CTO",
-    period: "Jul 2021 - Aug 2024",
-    location: "Bengaluru",
-    points: [
-      "Founded and scaled a social media platform to 1,500+ Android and 600+ iOS users; architected TypeScript backend and Flutter mobile application.",
-      "Boosted query performance by 40% via schema optimization; cut deployment time by 60% with ECS autoscaling and CI/CD pipelines.",
-      "Deployed comprehensive monitoring with Grafana and Redis task queues, maintaining sub-200ms P95 latency and reducing production incidents by 45%.",
-      "Led 5-member engineering team through 20+ production releases; improved user retention by 65% through mentoring and architecture reviews."
+    "company": "JustPoll (Streetlab Internet Pvt Ltd)",
+    "role": "Founder & CTO",
+    "period": "Jul 2021 – Aug 2024",
+    "location": "Bengaluru",
+    "points": [
+      "Founded a social polling platform and developed its TypeScript backend and Flutter mobile application, using PostgreSQL and Redis.",
+      "Managed cloud deployment and delivery workflows on AWS, with Docker, CI/CD and operational monitoring."
     ],
-    tech: ["Node.js", "TypeScript", "PostgreSQL", "Redis", "AWS (ECS, S3)", "Flutter", "CI/CD"]
+    "tech": [
+      "Node.js",
+      "TypeScript",
+      "Flutter",
+      "PostgreSQL",
+      "Redis",
+      "AWS (ECS",
+      "EC2",
+      "S3)",
+      "Docker",
+      "Grafana"
+    ]
   }
 ];
 
