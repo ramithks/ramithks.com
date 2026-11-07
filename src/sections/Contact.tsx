@@ -34,11 +34,11 @@ export const Contact = () => {
                     </h2>
                 </div>
 
-                <div className="group relative inline-block">
+                <div className="group relative inline-block max-w-full">
                     <a 
                         href="mailto:ramithgowdakundoor123@gmail.com" 
                         onClick={handleEmailClick}
-                        className="relative z-10 text-2xl md:text-5xl font-bold text-white/60 group-hover:text-white transition-colors duration-300 border-b border-white/20 pb-2 group-hover:border-white"
+                        className="relative z-10 inline-block max-w-full break-all text-base sm:text-2xl md:text-5xl font-bold text-white/60 group-hover:text-white transition-colors duration-300 border-b border-white/20 pb-2 group-hover:border-white"
                     >
                         ramithgowdakundoor123@gmail.com
                     </a>
