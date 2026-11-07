@@ -9,18 +9,97 @@ import { trackLinkClick, trackButtonClick } from "../lib/analytics";
 
 const projects = [
   {
-    title: "AlgoHabit",
-    category: "AI-POWERED // LANGCHAIN & RAG",
-    desc: "AI-powered DSA learning platform using LangChain LLM pipelines and RAG for personalized, syllabus-grounded learning plans.",
-    tech: ["React", "LangChain", "RAG", "pgvector", "OpenRouter AI", "Supabase", "PWA"],
-    link: "https://algohabit.com",
-    github: null,
-    details: {
-        problem: "Students struggle to maintain consistency in learning DSA and need syllabus-grounded personalized learning paths.",
-        solution: "Built a LangChain-based LLM pipeline using OpenRouter, prompt templates, structured output parsing, retries and model fallback. Implemented a RAG pipeline using document chunking, embeddings and pgvector-based semantic search.",
-        impact: "Achieved 95+ Lighthouse score. Syllabus-grounded RAG recommendations reduced content generation costs by 70% while improving 30-day user retention by 60%."
+    "title": "AlgoHabit",
+    "category": "AI-assisted learning companion",
+    "desc": "Integrated OpenRouter chat completions for learning recommendations and personalised feedback, with prompt templates and JSON response parsing.",
+    "tech": [
+      "TypeScript",
+      "React",
+      "OpenRouter API"
+    ],
+    "link": null,
+    "github": null,
+    "details": {
+      "problem": "AI-assisted learning companion",
+      "solution": "Integrated OpenRouter chat completions for learning recommendations and personalised feedback, with prompt templates and JSON response parsing.",
+      "impact": "Added recommendation caching, client-side request checks and static fallbacks so core learning flows work without AI."
     }
   },
+  {
+    "title": "Berthbell",
+    "category": "Shipment exception desk",
+    "desc": "Developed shipment CSV ingestion and workspace-scoped exception APIs with input validation, access checks and upload quotas.",
+    "tech": [
+      "TypeScript",
+      "Cloudflare Workers",
+      "D1",
+      "React",
+      "Python"
+    ],
+    "link": "https://berthbell.com",
+    "github": null,
+    "details": {
+      "problem": "Shipment exception desk",
+      "solution": "Developed shipment CSV ingestion and workspace-scoped exception APIs with input validation, access checks and upload quotas.",
+      "impact": "Built deterministic status rules with source timestamps and evidence, separating missing or stale coverage from reported schedule changes. Connected a React workspace to the API for reviewing shipment exceptions. Current maritime source coverage is regional, not global tracking."
+    }
+  },
+  {
+    "title": "Gundi",
+    "category": "Road reporting and measurement research",
+    "desc": "Built a reporting interface with map-based location selection, official ward-boundary context and source-linked repair guidance.",
+    "tech": [
+      "Python",
+      "NumPy",
+      "SciPy",
+      "JavaScript",
+      "MapLibre"
+    ],
+    "link": "https://gundi.in",
+    "github": null,
+    "details": {
+      "problem": "Road reporting and measurement research",
+      "solution": "Built a reporting interface with map-based location selection, official ward-boundary context and source-linked repair guidance.",
+      "impact": "Implemented a Python geometry core for road-surface fitting, pothole dimensions, uncertainty propagation and repair comparison. Tested measurement logic on synthetic cavity cases and added abstention gates when scale or geometry evidence is insufficient."
+    }
+  },
+  {
+    "title": "Meanwhile",
+    "category": "Persistent shared-world simulation",
+    "desc": "Built a persistent simulation backend with scheduled world updates, shared state and character interaction workflows.",
+    "tech": [
+      "JavaScript",
+      "Cloudflare Workers",
+      "D1",
+      "OAuth"
+    ],
+    "link": null,
+    "github": null,
+    "details": {
+      "problem": "Persistent shared-world simulation",
+      "solution": "Built a persistent simulation backend with scheduled world updates, shared state and character interaction workflows.",
+      "impact": "Implemented email/password and Google/GitHub sign-in, expiring revocable sessions and transactional account-recovery flows."
+    }
+  },
+  {
+    "title": "HelpMyBuddy",
+    "category": "Team-built emergency-help application",
+    "desc": "Developed the TypeScript/Express backend and PostgreSQL integration for a team-built mobile emergency-help application.",
+    "tech": [
+      "Node.js",
+      "Express",
+      "TypeScript",
+      "PostgreSQL"
+    ],
+    "link": null,
+    "github": "https://github.com/SiliconNinjas/HelpMyBuddy",
+    "details": {
+      "problem": "Team-built emergency-help application",
+      "solution": "Developed the TypeScript/Express backend and PostgreSQL integration for a team-built mobile emergency-help application.",
+      "impact": "Worked alongside dedicated frontend and ML contributors to connect mobile workflows with backend services."
+    }
+  }
+,
   {
     title: "Ledgerly",
     category: "FINTECH // CLASSICAL ML",
@@ -32,19 +111,6 @@ const projects = [
         problem: "Managing multiple subscriptions and accurately categorizing transactions and anomalies.",
         solution: "Built scikit-learn pipelines using TF-IDF and Logistic Regression for classification, statistical forecasting for spending trends, and MAD-based anomaly detection served through FastAPI endpoints with Pydantic validation.",
         impact: "Used MLflow for experiment tracking and model metrics. Achieved 92% code coverage with Pytest across 40+ endpoints."
-    }
-  },
-  {
-    title: "HelpMyBuddy",
-    category: "HACKATHON WINNER // GEO",
-    desc: "Real-time emergency marketplace with <500ms matching latency using MongoDB spatial queries.",
-    tech: ["React Native", "Node.js", "Express", "FastAPI"],
-    link: null,
-    github: "https://github.com/SiliconNinjas/HelpMyBuddy",
-    details: {
-        problem: "Fragmented systems for finding immediate emergency help like car breakdowns or medical needs.",
-        solution: "High-concurrency matching engine connecting users to helpers within a 5km radius using geospatial indexing.",
-        impact: "Won HackBangalore 2024. Proved low-latency matching in real-time scenarios."
     }
   },
   {
