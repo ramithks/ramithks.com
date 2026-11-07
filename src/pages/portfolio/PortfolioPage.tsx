@@ -23,7 +23,6 @@ export const PortfolioPage = () => {
       </Helmet>
       
       <Navbar />
-      <CommandPalette />
       <CustomCursor />
       
       <SmoothScroll>
@@ -36,6 +35,7 @@ export const PortfolioPage = () => {
           <Contact />
         </main>
       </SmoothScroll>
+      <CommandPalette />
     </div>
   );
 };
