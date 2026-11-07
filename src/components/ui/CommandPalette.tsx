@@ -322,7 +322,8 @@ export const CommandPalette = () => {
       <button 
           id="system-root-trigger"
           onClick={() => setOpen((prev) => !prev)}
-          className="fixed bottom-10 right-10 z-[50] p-4 bg-white/10 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 group"
+          aria-label="Open System Root"
+          className="relative flex items-center justify-center mx-auto mb-6 sm:fixed sm:bottom-10 sm:right-10 z-[50] p-4 bg-white/10 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-md border border-white/20 transition-all duration-300 group"
       >
           <Terminal size={20} />
           <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-in-out whitespace-nowrap ml-0 group-hover:ml-2">
