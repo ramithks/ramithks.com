@@ -3,8 +3,9 @@ import { useSectionView } from "../hooks/useSectionView";
 
 const experiences = [
   {
-    "company": "Kanmalai Technologies | Client: Thermo Fisher Scientific",
+    "company": "Thermo Fisher Scientific",
     "role": "Software Development Engineer II",
+    "employer": "via Kanmalai Technologies (employer)",
     "period": "Feb 2026 - Present",
     "location": "Bengaluru, Karnataka, India (Hybrid)",
     "points": [
@@ -103,6 +104,7 @@ export const Experience = () => {
                                 <h3 className="text-3xl font-bold text-white mb-2">
                                     {exp.company}
                                 </h3>
+                                {"employer" in exp && <div className="text-base text-white/60 mb-2">{exp.employer}</div>}
                                 <div className="text-lg text-white/50 mb-6 font-medium tracking-wide">
                                     {exp.role}
                                 </div>
