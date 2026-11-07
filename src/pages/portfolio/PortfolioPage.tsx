@@ -15,9 +15,9 @@ export const PortfolioPage = () => {
   return (
     <div className="bg-black min-h-screen text-white cursor-none selection:bg-primary/30">
       <Helmet>
-        <title>Ramith K S | Senior Backend Engineer</title>
-        <meta name="description" content="Portfolio of Ramith K S, a Senior Backend Engineer specializing in scalable distributed systems." />
-        <meta property="og:title" content="Ramith K S | Senior Backend Engineer" />
+        <title>Ramith K S | Backend & Applied AI Engineer</title>
+        <meta name="description" content="Portfolio of Ramith K S, a Backend & Applied AI Engineer specializing in scalable distributed systems." />
+        <meta property="og:title" content="Ramith K S | Backend & Applied AI Engineer" />
         <meta property="og:description" content="Building scalable systems and high-performance APIs." />
         <meta property="og:image" content="/profile_alt.jpg" />
       </Helmet>
