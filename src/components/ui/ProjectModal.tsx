@@ -93,7 +93,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                       className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-medium transition-colors border border-primary/20"
                     >
                       <ExternalLink size={16} />
-                      Live Demo
+                      Visit website
                     </a>
                   )}
                 </div>
@@ -102,7 +102,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                 <div className="space-y-8">
                   <div>
                     <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                       <ArrowRight size={18} className="text-primary" /> The Problem
+                       <ArrowRight size={18} className="text-primary" /> Project focus
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
                       {project.details?.problem || "Complex challenges requiring scalable architectural solutions and high-performance engineering."}
@@ -111,7 +111,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
                   
                   <div>
                     <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                       <ArrowRight size={18} className="text-primary" /> The Solution
+                       <ArrowRight size={18} className="text-primary" /> Implementation
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
                       {project.details?.solution || "Implemented using modern distributed systems patterns, ensuring low latency and high availability."}
@@ -120,7 +120,7 @@ export const ProjectModal = ({ project, isOpen, onClose }: ProjectModalProps) =>
 
                   <div>
                     <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                       <ArrowRight size={18} className="text-primary" /> Key Impact
+                       <ArrowRight size={18} className="text-primary" /> Additional work
                     </h3>
                     <p className="text-gray-300 leading-relaxed">
                       {project.details?.impact || "Optimized performance, reduced operational overhead, and delivered seamless user experiences."}
