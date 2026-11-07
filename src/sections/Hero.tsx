@@ -49,7 +49,7 @@ export const Hero = () => {
                         
                         <div className="flex flex-col gap-2 mb-12 border-l-2 border-white/20 pl-6">
                             <div className="text-xl md:text-2xl font-light text-white/80">
-                                Senior Backend Engineer
+                                Backend & Applied AI Engineer
                             </div>
                             <div className="text-sm font-mono text-white/40 tracking-wider">
                                 BACKEND ENGINEERING // HIGH-PERFORMANCE APIs // DISTRIBUTED SYSTEMS
