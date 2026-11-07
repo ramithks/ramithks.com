@@ -49,14 +49,14 @@ export const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 pointer-events-none px-6",
+        "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 pointer-events-none px-3 sm:px-6",
         scrolled ? "py-4" : "py-6"
       )}
     >
       <div 
         className={cn(
           "max-w-7xl mx-auto rounded-full border border-transparent transition-all duration-300 pointer-events-auto",
-          scrolled && "bg-black/50 border-white/10 backdrop-blur-md shadow-lg pr-4 py-1.5 pl-4 sm:pl-6"
+          scrolled && "bg-black/50 border-white/10 backdrop-blur-md shadow-lg px-1.5 sm:pr-4 py-1.5 sm:pl-6"
         )}
       >
         <div className="flex items-center justify-between">
@@ -73,7 +73,7 @@ export const Navbar = () => {
             </a>
 
             {/* 2. Navigation Zone (Center) - Responsive */}
-            <nav className="flex items-center gap-0.5 sm:gap-1 p-1 bg-white/5 rounded-full border border-white/5 mx-auto lg:mx-0 overflow-x-auto no-scrollbar max-w-[90vw] sm:max-w-none">
+            <nav className="flex items-center justify-between sm:justify-start gap-0 sm:gap-1 p-1 bg-white/5 rounded-full border border-white/5 mx-auto lg:mx-0 w-full sm:w-auto max-w-full">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -83,7 +83,7 @@ export const Navbar = () => {
                     trackNavigationClick(link.id);
                   }}
                   className={cn(
-                    "relative px-2.5 sm:px-3 md:px-4 py-1.5 text-[10px] xs:text-[11px] sm:text-xs md:text-sm font-medium transition-colors rounded-full shrink-0",
+                    "relative px-1.5 sm:px-3 md:px-4 py-1.5 text-[10px] xs:text-[11px] sm:text-xs md:text-sm font-medium transition-colors rounded-full shrink-0",
                     activeTab === link.id ? "text-black" : "text-white/70 hover:text-white"
                   )}
                 >
@@ -94,7 +94,7 @@ export const Navbar = () => {
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
-                  <span className="relative z-10">{link.name}</span>
+                  <span className="relative z-10">{link.id === "social" ? <><span className="sm:hidden">Hub</span><span className="hidden sm:inline">{link.name}</span></> : link.name}</span>
                 </a>
               ))}
             </nav>
