@@ -6,9 +6,9 @@ import { useSectionView } from "../hooks/useSectionView";
 const education = [
     {
         school: "Christ University, Bangalore",
-        degree: "Bachelor's degree, Computer Science",
+        degree: "Bachelor of Computer Applications",
         year: "2018 – 2021",
-        grade: "CGPA: 3.3/4.0"
+        grade: "First Class"
     },
     {
         school: "Excellent PU College",
@@ -58,10 +58,10 @@ export const About = () => {
                     </div>
                     <div className="prose prose-invert prose-lg text-gray-300">
                         <p>
-                            Senior Backend Engineer with 5+ years of experience building scalable Python/FastAPI services, distributed systems and cloud-native applications.
+                            Backend engineer and former founder focused on AI-enabled applications. Builds Python/FastAPI order services and Kafka workflows at Kanmalai Technologies for client Thermo Fisher Scientific. Project work includes OpenRouter LLM integration, response parsing, caching and fallbacks.
                         </p>
                         <p>
-                            Experienced in developing AI-enabled backend features using LangChain, LLM APIs, RAG pipelines and lightweight machine-learning models.
+                            
                         </p>
                     </div>
                 </div>
@@ -127,4 +127,3 @@ export const About = () => {
     </section>
   );
 };
-
