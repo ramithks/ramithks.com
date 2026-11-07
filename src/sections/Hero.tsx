@@ -15,7 +15,7 @@ export const Hero = () => {
     };
 
     const handleResumeDownload = () => {
-        trackResumeDownload("ramithks_cv.pdf", "hero_section");
+        trackResumeDownload("2-ramithks_cv.pdf", "hero_section");
     };
 
     return (
@@ -70,7 +70,7 @@ export const Hero = () => {
                                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                             </a>
                             <a 
-                                href="ramithks_cv.pdf" 
+                                href="2-ramithks_cv.pdf" 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 onClick={handleResumeDownload}
