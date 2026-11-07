@@ -1,82 +1,14 @@
 import { Reveal } from "../components/ui/Reveal";
 import { SpotlightCard } from "../components/ui/SpotlightCard";
-import { Code2, Database, Server, Activity, Brain, Layers } from "lucide-react";
+import { Code2, Database, Server, Activity, Brain } from "lucide-react";
 import { useSectionView } from "../hooks/useSectionView";
 
 const skillCategories = [
-  {
-    icon: Code2,
-    title: "Backend & Languages",
-    skills: [
-      "Python",
-      "FastAPI",
-      "AsyncIO",
-      "REST APIs",
-      "Node.js",
-      "TypeScript",
-    ],
-  },
-  {
-    icon: Brain,
-    title: "Generative AI & Machine Learning",
-    skills: [
-      "LangChain",
-      "LangGraph",
-      "LLM API Integration",
-      "RAG",
-      "Prompt Engineering",
-      "Structured Outputs",
-      "Embeddings",
-      "scikit-learn",
-      "Model Serving",
-    ],
-  },
-  {
-    icon: Database,
-    title: "AI Data & Storage",
-    skills: [
-      "pgvector",
-      "Vector Search",
-      "PostgreSQL",
-      "Redis",
-      "MongoDB",
-      "Pandas",
-      "NumPy",
-    ],
-  },
-  {
-    icon: Server,
-    title: "Systems & Cloud",
-    skills: [
-      "Microservices",
-      "Kafka",
-      "Event-Driven Architecture",
-      "Kubernetes",
-      "Docker",
-      "AWS",
-      "GitHub Actions",
-      "CI/CD",
-      "Observability",
-    ],
-  },
-  {
-    icon: Activity,
-    title: "Testing & Reliability",
-    skills: [
-      "Pytest",
-      "Integration Testing",
-      "Retry and Fallback Workflows",
-      "Root Cause Analysis",
-    ],
-  },
-  {
-    icon: Layers,
-    title: "Additional",
-    skills: [
-      "React",
-      "Flutter",
-    ],
-  },
+{ icon: Code2, title: "API engineering", skills: ["Python", "FastAPI", "TypeScript", "Node.js / Express", "REST APIs", "validation", "access control"] },
+{ icon: Server, title: "Async systems", skills: ["Kafka", "retries", "scheduled jobs", "persistent state", "session authentication"] },
+{ icon: Database, title: "Data & storage", skills: ["PostgreSQL", "Redis", "D1 / SQLite", "CSV ingestion", "data-quality checks", "evidence-linked rules"] },
+{ icon: Activity, title: "Delivery & testing", skills: ["Kubernetes", "Docker", "AWS", "Cloudflare Workers", "CI/CD", "Pytest", "integration tests"] },
+{ icon: Brain, title: "Applied AI", skills: ["Retrieval-augmented generation (RAG)", "vector search", "OpenRouter LLM APIs", "prompts", "response parsing", "caching and fallbacks"] }
 ];
 
 export const Skills = () => {
